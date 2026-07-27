@@ -29,10 +29,29 @@
     const data = await res.json();
     dbFileSha = data.sha;
     try {
-      const decoded = atob(data.content.replace(/\n/g, ''));
-      return JSON.parse(decoded);
+      const binary = atob(data.content.replace(/\n/g, ''));
+      const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+      const decoded = new TextDecoder('utf-8').decode(bytes);
+      return repairStoredText(JSON.parse(decoded));
     } catch {
       return [];
+    }
+  }
+
+  // Older versions decoded UTF-8 JSON as Latin-1. Repair any records that were
+  // saved again while affected, without touching already-correct Turkish text.
+  function repairStoredText(value) {
+    if (Array.isArray(value)) return value.map(repairStoredText);
+    if (value && typeof value === 'object') {
+      return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, repairStoredText(item)]));
+    }
+    if (typeof value !== 'string' || !/[ÃÄÅâ]/.test(value)) return value;
+    try {
+      const bytes = Uint8Array.from(value, char => char.charCodeAt(0));
+      const repaired = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+      return repaired.includes('\uFFFD') ? value : repaired;
+    } catch {
+      return value;
     }
   }
 

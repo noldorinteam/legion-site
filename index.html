@@ -7,7 +7,7 @@
   <meta name="description" content="LEGION — FiveM'in en elit hacker grubu. Sınırları zorlayan, sistemi ele geçiren ekip."/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Mono:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap&subset=latin-ext" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
@@ -185,6 +185,7 @@
       <ul class="nav-links">
         <li><a href="#" class="nav-link active" data-section="home"     id="nav-home">ANA SAYFA</a></li>
         <li><a href="#" class="nav-link"         data-section="database" id="nav-database">VERİTABANI</a></li>
+        <li><a href="#" class="nav-link"         data-section="reports"  id="nav-reports">RAPORLAR</a></li>
         <li><a href="#" class="nav-link"         data-section="gallery"  id="nav-gallery">GALERİ</a></li>
         <li><a href="#" class="nav-link"         data-section="upload"   id="nav-upload">YÜKLE</a></li>
         <li><a href="#" class="nav-link"         data-section="about"    id="nav-about">HAKKINDA</a></li>
@@ -318,6 +319,46 @@
       </div>
     </section>
 
+    <!-- ═══════ SECTION: REPORTS ═══════ -->
+    <section id="section-reports" class="section hidden">
+      <div class="reports-shell">
+        <div class="reports-topbar">
+          <div>
+            <span class="reports-kicker">OLAY KAYIT SİSTEMİ</span>
+            <h2 class="section-title"><span class="title-prefix">//</span> RAPORLAR</h2>
+            <p class="section-desc">Yaşanan olayları, sorumluları ve görsel kanıtları ortak arşive kaydedin.</p>
+          </div>
+          <button id="new-report-btn" class="add-entry-btn"><span class="add-icon">+</span><span>YENİ RAPOR</span></button>
+        </div>
+        <div id="report-form-panel" class="report-form-panel hidden">
+          <form id="report-form">
+            <div class="report-form-grid">
+              <label><span>RAPOR BAŞLIĞI</span><input id="report-title" maxlength="100" required placeholder="Olay için kısa bir başlık"></label>
+              <label><span>YAZAN KİŞİ</span><input id="report-author" maxlength="60" required placeholder="İsim / kullanıcı adı"></label>
+            </div>
+            <label><span>OLAY</span><textarea id="report-incident" maxlength="4000" required placeholder="Olayın zamanı, yeri ve ayrıntıları..."></textarea></label>
+            <label class="report-photo-field">
+              <span>FOTOĞRAF <small>(İSTEĞE BAĞLI)</small></span>
+              <input id="report-photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+              <div id="report-photo-name">Dosya seçilmedi · JPG, PNG, WEBP, GIF — en fazla 8 MB</div>
+            </label>
+            <div class="report-form-actions">
+              <button id="cancel-report-btn" type="button" class="action-btn danger">İPTAL</button>
+              <button id="save-report-btn" type="submit" class="action-btn primary">RAPORU KAYDET</button>
+            </div>
+            <div id="report-form-status" aria-live="polite"></div>
+          </form>
+        </div>
+        <div class="reports-toolbar">
+          <input id="report-search" type="search" placeholder="Başlık, kişi veya olay içinde ara...">
+          <span id="report-count">0 RAPOR</span>
+        </div>
+        <div id="reports-list" class="reports-list">
+          <div class="reports-loading">RAPORLAR YÜKLENİYOR...</div>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══════ SECTION: UPLOAD ═══════ -->
     <section id="section-upload" class="section hidden">
       <div class="section-header">
@@ -414,6 +455,7 @@
   <script src="boot.js"></script>
   <script src="github.js"></script>
   <script src="database.js"></script>
+  <script src="reports.js"></script>
   <script src="gallery.js"></script>
   <script src="app.js"></script>
 </body>
