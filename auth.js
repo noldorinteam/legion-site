@@ -148,16 +148,10 @@
 
   function createShell() {
     document.body.insertAdjacentHTML('afterbegin', `
-      <div id="intro-cinematic" class="hidden" aria-live="polite">
-        <video id="intro-video" playsinline preload="auto"></video>
-        <div class="intro-shade"></div>
-        <div class="intro-hud">
-          <div><span class="intro-live"></span> LEGION SECURE CHANNEL</div>
-          <span id="intro-stage">SEQUENCE 01 / 02</span>
-        </div>
-        <div class="intro-progress"><span id="intro-progress-fill"></span></div>
+      <div id="site-video-background" class="hidden" aria-hidden="true">
+        <video id="site-background-video" playsinline muted loop preload="auto"></video>
+        <div class="video-background-shade"></div>
       </div>
-      <audio id="login-music" src="music/jeXfXt5eaCyPmIG6oKRfNA.mp3" loop preload="auto"></audio>
       <div id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
         <div class="access-noise"></div>
         <form id="access-form" class="access-card" autocomplete="off">
@@ -282,79 +276,28 @@
     gate.classList.add('access-granted');
     setTimeout(() => gate.remove(), 650);
     startSiteAudio();
-    playIntroSequence();
+    startBackgroundVideo();
+    document.dispatchEvent(new CustomEvent('legion:authenticated'));
   }
 
   function startSiteAudio() {
-    const loginMusic = document.getElementById('login-music');
     const backgroundMusic = document.getElementById('bg-music');
-    if (loginMusic) {
-      loginMusic.volume = .68;
-      loginMusic.play().catch(() => {});
-    }
     if (backgroundMusic) {
-      backgroundMusic.volume = .22;
+      backgroundMusic.volume = .10;
       backgroundMusic.play().catch(() => {});
     }
   }
 
-  function playTone(frequency = 92, duration = .16) {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      const context = new AudioContext();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.setValueAtTime(frequency, context.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(frequency * 2.1, context.currentTime + duration);
-      gain.gain.setValueAtTime(.055, context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + duration);
-      oscillator.connect(gain).connect(context.destination);
-      oscillator.start();
-      oscillator.stop(context.currentTime + duration);
-      oscillator.onended = () => context.close();
-    } catch (_) {}
-  }
-
-  function playIntroSequence() {
-    const overlay = document.getElementById('intro-cinematic');
-    const video = document.getElementById('intro-video');
-    const stage = document.getElementById('intro-stage');
-    const progress = document.getElementById('intro-progress-fill');
-    let finished = false;
-
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      video.src = 'music/LEGION_90s_FINAL_DRAFT.mp4';
-      video.muted = true;
-      video.volume = 0;
-      video.loop = true;
-      video.load();
-      video.play().catch(() => {});
-      overlay.classList.add('background-mode');
-      document.dispatchEvent(new CustomEvent('legion:authenticated'));
-    };
-
-    video.addEventListener('timeupdate', () => {
-      if (video.duration) progress.style.width = `${Math.min(100, video.currentTime / video.duration * 100)}%`;
-    });
-    video.addEventListener('ended', finish, { once: true });
-    video.addEventListener('error', finish, { once: true });
-
-    overlay.classList.remove('hidden', 'intro-exit', 'background-mode');
-    stage.textContent = 'INTRO SEQUENCE';
-    progress.style.width = '0%';
-    video.src = 'music/LEGION_FiveM_Hacker_Intro_1080p.mp4';
-    video.muted = false;
-    video.volume = 1;
-    video.loop = false;
+  function startBackgroundVideo() {
+    const overlay = document.getElementById('site-video-background');
+    const video = document.getElementById('site-background-video');
+    overlay.classList.remove('hidden');
+    video.src = 'music/LEGION_90s_FINAL_DRAFT.mp4';
+    video.muted = true;
+    video.volume = 0;
+    video.loop = true;
     video.load();
-    playTone(64, .28);
-    video.play().catch(() => {
-      video.muted = true;
-      video.play().catch(finish);
-    });
+    video.play().catch(() => {});
   }
 
   function bind() {
