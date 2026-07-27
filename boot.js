@@ -87,9 +87,6 @@
     main.style.transition = 'opacity 0.6s ease';
     setTimeout(() => { main.style.opacity = '1'; }, 50);
 
-    // Start background matrix
-    window.initBgMatrix();
-
     // Try playing music
     tryPlayMusic();
   }

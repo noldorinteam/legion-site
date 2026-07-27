@@ -149,7 +149,7 @@
   function createShell() {
     document.body.insertAdjacentHTML('afterbegin', `
       <div id="site-video-background" class="hidden" aria-hidden="true">
-        <video id="site-background-video" playsinline muted loop preload="auto"></video>
+        <video id="site-background-video" playsinline muted loop preload="metadata"></video>
         <div class="video-background-shade"></div>
       </div>
       <div id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
@@ -300,6 +300,20 @@
     video.play().catch(() => {});
   }
 
+  function initPerformanceControls() {
+    document.addEventListener('visibilitychange', () => {
+      const video = document.getElementById('site-background-video');
+      const music = document.getElementById('bg-music');
+      if (document.hidden) {
+        video?.pause();
+        music?.pause();
+      } else if (currentRole) {
+        video?.play().catch(() => {});
+        music?.play().catch(() => {});
+      }
+    });
+  }
+
   function bind() {
     document.getElementById('access-form').addEventListener('submit', async event => {
       event.preventDefault();
@@ -401,6 +415,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     createShell();
     bind();
+    initPerformanceControls();
     renderCodes();
     if (restoreSession()) unlock(currentRole);
   });
