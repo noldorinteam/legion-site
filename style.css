@@ -1241,7 +1241,7 @@ body {
   position: absolute;
   inset: 0;
   background: rgba(0,0,0,0.92);
-  backdrop-filter: blur(6px);
+  backdrop-filter:none;
 }
 #db-modal-box {
   position: relative;
@@ -1251,16 +1251,14 @@ body {
   overflow-y: auto;
   background: var(--bg2);
   border: 1px solid var(--border);
-  box-shadow: 0 0 50px rgba(0,229,255,0.15), 0 0 100px rgba(0,0,0,0.8);
+  box-shadow:none;
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
 .modal-scanline {
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-  animation: modalScan 2s linear infinite;
+  display:none;
 }
 @keyframes modalScan {
   0%   { background-position: -200% 0; }
@@ -1331,16 +1329,16 @@ body {
   font-size: 0.8rem;
   padding: 0.6rem 0.8rem;
   outline: none;
-  transition: all var(--transition);
+  transition: none;
   width: 100%;
 }
 .form-input:focus {
   border-color: var(--cyan);
-  background: rgba(0,229,255,0.04);
-  box-shadow: 0 0 10px rgba(0,229,255,0.1);
+  background: rgba(0,255,65,0.03);
+  box-shadow: none;
 }
 .form-input::placeholder { color: var(--green-dark); }
-.form-input.error { border-color: var(--red); box-shadow: 0 0 8px rgba(255,32,32,0.2); }
+.form-input.error { border-color: var(--red); box-shadow:none; }
 .form-textarea {
   resize: vertical;
   min-height: 80px;
@@ -1358,7 +1356,7 @@ body {
 .photo-upload-zone {
   border: 2px dashed var(--border);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: none;
   overflow: hidden;
   position: relative;
 }

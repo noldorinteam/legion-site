@@ -5,83 +5,15 @@
 
 (function() {
 
-  function playUiSound(kind = 'move') {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      const context = new AudioContext();
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      const frequencies = { move: [110, 220], open: [165, 330], close: [240, 90] };
-      const notes = frequencies[kind] || frequencies.move;
-      oscillator.type = 'square';
-      oscillator.frequency.setValueAtTime(notes[0], context.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(notes[1], context.currentTime + .11);
-      gain.gain.setValueAtTime(.025, context.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + .13);
-      oscillator.connect(gain).connect(context.destination);
-      oscillator.start();
-      oscillator.stop(context.currentTime + .13);
-      oscillator.onended = () => context.close();
-    } catch (_) {}
-  }
-
-  // ─── GLITCH TRANSITION ───────────────────────────
-  const BINARY_STRINGS = [
-    '01011001 01101111 01110101 00100000',
-    '01000011 01100001 01101110 01101110',
-    '01101111 01110100 00100000 01010011',
-    '01010100 01101111 01110000 00100000',
-    '01001100 01000101 01000111 01001001',
-    '01001111 01001110 00100000 01011111',
-  ];
-
-  function showGlitch(targetSection, labelText) {
-    playUiSound('open');
-    const overlay = document.getElementById('glitch-overlay');
-    const binary  = document.getElementById('glitch-binary');
-    const label   = document.getElementById('glitch-label');
-
-    overlay.classList.remove('hidden');
-
-    let i = 0;
-    const interval = setInterval(() => {
-      binary.textContent = BINARY_STRINGS[i % BINARY_STRINGS.length];
-      i++;
-    }, 80);
-
-    label.textContent = labelText || 'GALERİ';
-    label.style.opacity = '0';
-    label.style.pointerEvents = 'none';
-
-    setTimeout(() => {
-      clearInterval(interval);
-      binary.textContent = '01011001';
-      label.style.opacity = '1';
-      label.style.pointerEvents = 'all';
-    }, 700);
-
-    // Onclick
-    label.onclick = () => {
-      playUiSound('close');
-      overlay.classList.add('hidden');
-      label.style.opacity = '0';
-      label.style.pointerEvents = 'none';
-      navigateTo(targetSection, false);
-    };
-
-    // Auto dismiss
-    setTimeout(() => {
-      if (!overlay.classList.contains('hidden')) {
-        overlay.classList.add('hidden');
-        label.style.opacity = '0';
-        label.style.pointerEvents = 'none';
-        navigateTo(targetSection, false);
-      }
-    }, 2500);
-  }
-
   // ─── NAVIGATION ──────────────────────────────────
   let currentSection = 'home';
+
+  function syncBackgroundVideo(sectionId) {
+    const video = document.getElementById('site-background-video');
+    if (!video) return;
+    if (sectionId === 'home' && !document.hidden) video.play().catch(() => {});
+    else video.pause();
+  }
 
   function navigateTo(sectionId, withGlitch) {
     if (window.LegionAuth?.role() === 'visitor' && !['home', 'gallery', 'about'].includes(sectionId)) {
@@ -104,6 +36,8 @@
     if (activeLink) activeLink.classList.add('active');
 
     currentSection = sectionId;
+    document.documentElement.dataset.section = sectionId;
+    syncBackgroundVideo(sectionId);
 
     // Section-specific loaders
     if (sectionId === 'gallery')  Gallery.loadGallery();
