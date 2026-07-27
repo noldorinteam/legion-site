@@ -88,6 +88,7 @@
       const labelMap = {
         home:     'ANA SAYFA',
         database: 'VERİTABANI',
+        reports:   'RAPORLAR',
         gallery:  'GALERİ',
         upload:   'YÜKLE',
         about:    'HAKKINDA',
@@ -117,6 +118,7 @@
     // Section-specific loaders
     if (sectionId === 'gallery')  Gallery.loadGallery();
     if (sectionId === 'database') Database.loadDatabase();
+    if (sectionId === 'reports')  Reports.load();
   }
 
   // Expose for other modules
