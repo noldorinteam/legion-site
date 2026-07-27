@@ -32,17 +32,19 @@
    * @param {File} file - Browser File object
    * @param {function} onLog - callback(msg, type) for terminal logging
    */
-  async function uploadFile(file, onLog) {
+  async function uploadFile(file, onLog, title = '') {
     onLog(`[UPLOAD]  ${file.name} → Base64 dönüştürülüyor...`, 'out');
 
     const base64 = await fileToBase64(file);
-    const filePath = `${MEDIA_PATH}/${Date.now()}_${sanitizeFilename(file.name)}`;
+    const extension = file.name.includes('.') ? `.${file.name.split('.').pop()}` : '';
+    const displayName = title.trim() ? `${title.trim()}${extension}` : file.name;
+    const filePath = `${MEDIA_PATH}/${Date.now()}_${sanitizeFilename(displayName)}`;
     const url = `https://api.github.com/repos/${GH.githubUser}/${GH.githubRepo}/contents/${filePath}`;
 
     onLog(`[PUSH]    ${filePath} → GitHub'a gönderiliyor...`, 'out');
 
     const body = JSON.stringify({
-      message: `[LEGION] Upload: ${file.name}`,
+      message: `[LEGION] Galeri yüklemesi: ${displayName}`,
       content: base64,
       branch: GH.branch
     });
@@ -63,7 +65,7 @@
     }
 
     const data = await res.json();
-    onLog(`[TAMAM]   ${file.name} başarıyla yüklendi.`, 'info');
+    onLog(`[TAMAM]   ${displayName} başarıyla yüklendi.`, 'info');
     return data.content; // { name, path, sha, download_url, ... }
   }
 
@@ -117,7 +119,7 @@
   }
 
   function sanitizeFilename(name) {
-    return name.replace(/[^a-zA-Z0-9._\-]/g, '_');
+    return name.normalize('NFC').replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_').replace(/\s+/g, '-');
   }
 
   function isVideo(filename) {

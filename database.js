@@ -55,7 +55,8 @@
     }
   }
 
-  async function pushDB(newRecords, commitMsg) {
+  async function pushDB(newRecords, commitMsg, options = {}) {
+    const { retry = true, removedId = null } = options;
     const cfg = window.LEGION_CONFIG;
     const url = `https://api.github.com/repos/${cfg.githubUser}/${cfg.githubRepo}/contents/${DB_FILE}`;
     const content = btoa(unescape(encodeURIComponent(JSON.stringify(newRecords, null, 2))));
@@ -71,6 +72,16 @@
       },
       body: JSON.stringify(body)
     });
+    if (res.status === 409 && retry) {
+      const latest = await fetchDB();
+      const merged = removedId
+        ? latest.filter(record => record.id !== removedId)
+        : [...newRecords, ...latest].filter((record, index, list) =>
+            list.findIndex(item => item.id === record.id) === index
+          );
+      records = merged;
+      return pushDB(merged, commitMsg, { retry: false, removedId });
+    }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.message || `HTTP ${res.status}`);
@@ -326,7 +337,7 @@
 
     try {
       records = records.filter(r => r.id !== id);
-      await pushDB(records, `[LEGION] Kayıt silindi: ${rec.name}`);
+      await pushDB(records, `[LEGION] Kayıt silindi: ${rec.name}`, { removedId: id });
       renderTable(records);
       updateCount(records.length);
       // Log to upload terminal too
