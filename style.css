@@ -1417,4 +1417,152 @@ body {
   border-top: 1px solid var(--border);
 }
 .modal-terminal .terminal-body { height: 100px !important; }
+/* ── SECURE ACCESS / ADMIN CONSOLE ───────────────────────────── */
+#access-gate {
+  position: fixed; inset: 0; z-index: 100000; display: grid; place-items: center;
+  overflow: hidden; padding: 24px; background: #030706;
+  background-image: linear-gradient(90deg, rgba(0,255,126,.025) 1px, transparent 1px),
+    linear-gradient(rgba(0,255,126,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(1,7,5,.42), rgba(1,7,5,.08)),
+    url('assets/fivem-hacker-background-v2.png');
+  background-size: 54px 54px, 54px 54px, cover, cover;
+  background-position: center; animation: access-camera 9s ease-in-out infinite alternate;
+}
+#access-gate::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(circle at 50% 48%, transparent 0 22%, rgba(0,0,0,.42) 60%, #010302 100%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px);
+}
+.access-noise { position: absolute; inset: 0; opacity: .18; pointer-events: none; mix-blend-mode: screen;
+  background: linear-gradient(105deg, transparent 35%, rgba(0,255,126,.09) 50%, transparent 65%);
+  animation: access-scan 5s linear infinite;
+}
+.access-card {
+  position: relative; width: min(430px, 100%); margin-left: min(45vw, 720px); padding: 34px;
+  color: #dfffee; background: rgba(2,10,7,.84); border: 1px solid rgba(0,255,126,.38);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.8), 0 24px 80px #000, inset 0 0 45px rgba(0,255,126,.035);
+  backdrop-filter: blur(14px); font-family: 'Share Tech Mono', monospace;
+}
+.access-card::before,.access-card::after { content:""; position:absolute; width:28px; height:28px; border-color:#00ff7e; }
+.access-card::before { left:-1px; top:-1px; border-left:2px solid; border-top:2px solid; }
+.access-card::after { right:-1px; bottom:-1px; border-right:2px solid; border-bottom:2px solid; }
+.access-eyebrow { font-size:11px; letter-spacing:2px; color:#7f9f8e; }
+.access-eyebrow span { display:inline-block; width:7px; height:7px; margin-right:8px; border-radius:50%; background:#00ff7e; box-shadow:0 0 12px #00ff7e; }
+.access-card h1 { margin:28px 0 10px; color:#f0fff7; font:900 clamp(40px,6vw,68px)/.83 'Orbitron',sans-serif; letter-spacing:-4px; }
+.access-card h1 em { color:transparent; font-style:normal; -webkit-text-stroke:1px #00ff7e; }
+.access-copy { margin:18px 0 28px; color:#789085; font-size:13px; }
+.access-card label,.generator-card label { display:block; margin-bottom:8px; color:#00ff7e; font:11px 'Share Tech Mono',monospace; letter-spacing:1.8px; }
+.access-input-row { display:flex; align-items:center; gap:10px; padding:0 14px; border:1px solid #244d39; background:#020604; transition:.2s; }
+.access-input-row:focus-within { border-color:#00ff7e; box-shadow:0 0 20px rgba(0,255,126,.12); }
+.access-input-row span { color:#00ff7e; }
+#access-password { width:100%; height:52px; color:#eafff2; background:transparent; border:0; outline:0; font:20px 'Share Tech Mono',monospace; letter-spacing:5px; }
+#access-submit,#generate-code { width:100%; margin-top:14px; padding:16px; border:0; color:#001d0d; background:#00ff7e; font:700 12px 'Orbitron',sans-serif; letter-spacing:1.3px; cursor:pointer; }
+#access-submit b { float:right; font-size:17px; }
+#access-submit:hover,#generate-code:hover { background:#a6ffcd; box-shadow:0 0 25px rgba(0,255,126,.25); }
+#access-submit:disabled { opacity:.5; cursor:wait; }
+#access-error { height:20px; padding-top:12px; color:#ff4757; font-size:11px; text-align:center; letter-spacing:1px; }
+.access-meta { display:flex; justify-content:space-between; margin-top:20px; padding-top:16px; border-top:1px solid #163323; color:#4d8064; font-size:9px; }
+.access-meta span:first-child { color:#00ca68; }
+.access-granted { animation: gate-out .65s ease forwards !important; }
+.shake { animation: access-shake .32s ease; }
 
+#main-site::before {
+  content:""; position:fixed; inset:0; z-index:-2; opacity:.25; pointer-events:none;
+  background:url('assets/fivem-hacker-background-v2.png') center/cover no-repeat;
+  animation: character-talk 7s ease-in-out infinite;
+}
+#main-site::after { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; background:rgba(0,5,3,.62); }
+
+.admin-console { max-width:1180px; margin:0 auto; padding:105px 6vw 70px; color:#dfffee; }
+.admin-heading { display:flex; justify-content:space-between; gap:30px; align-items:flex-start; margin-bottom:36px; padding-bottom:25px; border-bottom:1px solid #164329; }
+.admin-heading h2 { margin:5px 0 8px; font:700 clamp(30px,5vw,54px) 'Orbitron',sans-serif; }
+.admin-heading p { color:#769383; }
+.admin-kicker { color:#00ff7e; font:12px 'Share Tech Mono',monospace; letter-spacing:3px; }
+.admin-logout,.copy-code { padding:12px 17px; border:1px solid #315d46; color:#8dbda4; background:transparent; font:11px 'Share Tech Mono',monospace; cursor:pointer; }
+.admin-logout:hover { color:#ff6876; border-color:#ff4757; }
+.generator-grid { display:grid; grid-template-columns:minmax(280px,.8fr) minmax(320px,1.2fr); gap:20px; }
+.generator-card { padding:25px; border:1px solid #194d2f; background:rgba(2,13,8,.82); box-shadow:inset 0 0 35px rgba(0,255,126,.025); }
+.custom-code-wrap { display:flex; align-items:center; margin-bottom:7px; border:1px solid #275b3c; background:#030d08; transition:.2s; }
+.custom-code-wrap:focus-within { border-color:#00ff7e; box-shadow:0 0 18px rgba(0,255,126,.11); }
+.custom-code-wrap span { padding-left:13px; color:#00a953; font:11px 'Share Tech Mono',monospace; }
+#custom-code { width:100%; padding:14px 12px; border:0; outline:0; color:#dfffee; background:transparent; font:14px 'Share Tech Mono',monospace; letter-spacing:1px; }
+.custom-code-help { display:block; margin:0 0 22px; color:#5c7e6b; font:10px 'Share Tech Mono',monospace; }
+.generator-card select { width:100%; padding:14px; margin-bottom:20px; color:#dfffee; border:1px solid #275b3c; background:#05120b; font:13px 'Share Tech Mono',monospace; }
+.check-row { display:flex !important; align-items:center; gap:9px; cursor:pointer; }
+.check-row input { accent-color:#00ff7e; }
+.generated-code { display:grid; place-items:center; min-height:100px; margin-top:18px; border:1px dashed #286041; color:#557465; background:#020805; }
+.generated-code small { color:#638473; font:9px 'Share Tech Mono',monospace; letter-spacing:2px; }
+.generated-code strong { color:#00ff7e; font:clamp(14px,2.2vw,22px) 'Share Tech Mono',monospace; letter-spacing:2px; text-shadow:0 0 12px rgba(0,255,126,.35); }
+.copy-code { width:100%; margin-top:10px; }
+.copy-code:disabled { opacity:.35; }
+.code-list-title,.code-row { display:flex; align-items:center; justify-content:space-between; }
+.code-list-title { padding-bottom:16px; color:#00ff7e; font:12px 'Orbitron',sans-serif; }
+.code-list-title b { display:grid; place-items:center; width:28px; height:28px; border:1px solid #235c3a; border-radius:50%; }
+.code-row { padding:14px 4px; border-top:1px solid #153824; }
+.code-row strong { display:block; color:#c8ffdf; font:14px 'Share Tech Mono',monospace; letter-spacing:1px; }
+.code-row small { display:block; margin-top:5px; color:#557665; font:9px 'Share Tech Mono',monospace; }
+.code-row button { border:0; color:#ff5969; background:transparent; font-size:25px; cursor:pointer; }
+.no-codes { padding:45px 0; color:#476553; text-align:center; font:11px 'Share Tech Mono',monospace; }
+.read-only-label { color:#51725f; font:9px 'Share Tech Mono',monospace; letter-spacing:1px; }
+html:not([data-role="admin"]) #section-admin { display:none !important; }
+
+@keyframes access-camera { from{background-size:54px 54px,54px 54px,cover,102%} to{background-size:54px 54px,54px 54px,cover,106%} }
+@keyframes character-talk { 0%,100%{transform:scale(1.02) translateY(0)} 38%{transform:scale(1.025) translateY(-3px)} 54%{transform:scale(1.024) translateY(1px)} 72%{transform:scale(1.027) translateY(-2px)} }
+@keyframes access-scan { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+@keyframes access-shake { 20%{transform:translateX(-8px)} 40%{transform:translateX(7px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(3px)} }
+@keyframes gate-out { to{opacity:0; transform:scale(1.035); visibility:hidden} }
+@media (max-width:900px) {
+  .access-card { margin-left:0; margin-top:38vh; }
+  #access-gate { background-position:center top; background-size:54px 54px,54px 54px,cover,auto 62%; background-repeat:repeat,repeat,no-repeat,no-repeat; }
+  .generator-grid { grid-template-columns:1fr; }
+}
+@media (max-width:600px) {
+  .access-card { padding:25px; }
+  .access-card h1 { letter-spacing:-2px; }
+  .admin-heading { display:block; }
+  .admin-logout { margin-top:20px; }
+}
+
+/* ── CINEMATIC INTRO / UI REFINEMENT ─────────────────────────── */
+#intro-cinematic {
+  position:fixed; inset:0; z-index:120000; overflow:hidden; background:#000;
+  opacity:1; transition:opacity .7s ease, filter .7s ease;
+}
+#intro-cinematic.hidden { display:none; }
+#intro-cinematic.intro-exit { opacity:0; filter:blur(12px); pointer-events:none; }
+#intro-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; }
+.intro-shade { position:absolute; inset:0; pointer-events:none; background:
+  linear-gradient(180deg,rgba(0,0,0,.52),transparent 22%,transparent 72%,rgba(0,0,0,.76)),
+  repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px); }
+.intro-hud { position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; padding:28px 34px; color:#94b8a4; font:10px 'Share Tech Mono',monospace; letter-spacing:2px; }
+.intro-live { display:inline-block; width:7px; height:7px; margin-right:9px; border-radius:50%; background:#00ff7e; box-shadow:0 0 12px #00ff7e; animation:intro-pulse 1.3s infinite; }
+.intro-progress { position:absolute; left:34px; right:34px; bottom:27px; height:2px; overflow:hidden; background:rgba(255,255,255,.16); }
+#intro-progress-fill { display:block; width:0; height:100%; background:#00ff7e; box-shadow:0 0 10px #00ff7e; transition:width .12s linear; }
+#intro-skip { position:absolute; right:34px; bottom:45px; padding:10px 0; border:0; color:#9db1a6; background:transparent; font:11px 'Share Tech Mono',monospace; letter-spacing:2px; cursor:pointer; }
+#intro-skip:hover { color:#00ff7e; }
+
+#navbar {
+  margin:14px 18px 0; width:calc(100% - 36px); border:1px solid rgba(0,255,126,.19);
+  background:linear-gradient(90deg,rgba(2,10,7,.91),rgba(4,16,11,.76)); border-radius:14px;
+  box-shadow:0 12px 45px rgba(0,0,0,.4), inset 0 1px rgba(255,255,255,.025);
+  backdrop-filter:blur(18px);
+}
+.nav-links { padding:5px; border:1px solid rgba(0,255,126,.08); border-radius:10px; background:rgba(0,0,0,.21); }
+.nav-link { border-radius:7px; transition:background .25s,color .25s,box-shadow .25s,transform .25s !important; }
+.nav-link:hover { transform:translateY(-1px); background:rgba(0,255,126,.07); }
+.nav-link.active { background:#00e66d !important; color:#001b0c !important; box-shadow:0 0 22px rgba(0,255,126,.2); }
+.hero-container { padding:42px; border:1px solid rgba(0,255,126,.14); border-radius:22px; background:linear-gradient(135deg,rgba(2,9,6,.81),rgba(2,12,8,.48)); box-shadow:0 30px 90px rgba(0,0,0,.42); backdrop-filter:blur(9px); }
+.stat-card,.about-card,.upload-panel,.db-table-wrap { border-radius:14px !important; background:rgba(3,13,9,.72) !important; backdrop-filter:blur(12px); }
+.cta-button,.action-btn,.add-entry-btn,.filter-btn { border-radius:8px !important; }
+.gallery-card { border-radius:13px; overflow:hidden; box-shadow:0 16px 35px rgba(0,0,0,.3); }
+.section { animation:section-enter .48s cubic-bezier(.22,.8,.22,1); }
+
+@keyframes intro-pulse { 50%{opacity:.35;box-shadow:0 0 3px #00ff7e} }
+@keyframes section-enter { from{opacity:0;transform:translateY(12px);filter:blur(4px)} to{opacity:1;transform:none;filter:none} }
+@media (max-width:900px) {
+  #navbar { margin:8px; width:calc(100% - 16px); border-radius:10px; }
+  .hero-container { padding:25px; border-radius:15px; }
+  .intro-hud { padding:18px; }
+  .intro-progress { left:18px; right:18px; bottom:18px; }
+  #intro-skip { right:18px; bottom:34px; }
+}

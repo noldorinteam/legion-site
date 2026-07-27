@@ -300,6 +300,7 @@
   // ─── DELETE ──────────────────────────────────────
 
   async function deleteRecord(id) {
+    if (!window.LegionAuth?.isAdmin()) return;
     const rec = records.find(r => r.id === id);
     if (!rec) return;
     if (!confirm(`"${rec.name}" kaydı silinsin mi? Bu işlem geri alınamaz.`)) return;
@@ -342,6 +343,9 @@
     data.forEach(rec => {
       const tr = document.createElement('tr');
       tr.id = `row-${rec.id}`;
+      const adminActions = window.LegionAuth?.isAdmin() ? `
+            <button class="tbl-btn tbl-btn-edit"   data-id="${rec.id}">DÜZENLE</button>
+            <button class="tbl-btn tbl-btn-delete" data-id="${rec.id}">SİL</button>` : '<span class="read-only-label">SALT OKUNUR</span>';
       tr.innerHTML = `
         <td class="td-photo">
           ${rec.photoUrl
@@ -357,8 +361,7 @@
         <td class="td-note" title="${escHtml(rec.note)}">${escHtml(rec.note)}</td>
         <td class="td-actions">
           <div class="td-actions-wrap">
-            <button class="tbl-btn tbl-btn-edit"   data-id="${rec.id}">DÜZENLE</button>
-            <button class="tbl-btn tbl-btn-delete" data-id="${rec.id}">SİL</button>
+            ${adminActions}
           </div>
         </td>
       `;
@@ -372,12 +375,12 @@
       }
 
       // Edit button
-      tr.querySelector('.tbl-btn-edit').addEventListener('click', () => {
+      tr.querySelector('.tbl-btn-edit')?.addEventListener('click', () => {
         openModal('edit', rec);
       });
 
       // Delete button
-      tr.querySelector('.tbl-btn-delete').addEventListener('click', () => {
+      tr.querySelector('.tbl-btn-delete')?.addEventListener('click', () => {
         deleteRecord(rec.id);
       });
 
