@@ -279,6 +279,7 @@
     setSession(role);
     applyRole();
     document.documentElement.classList.add('performance-mode');
+    document.documentElement.dataset.section = 'home';
     const gate = document.getElementById('access-gate');
     gate.classList.add('access-granted');
     setTimeout(() => gate.remove(), 650);
@@ -315,7 +316,7 @@
         video?.pause();
         music?.pause();
       } else if (currentRole) {
-        video?.play().catch(() => {});
+        if (document.documentElement.dataset.section === 'home') video?.play().catch(() => {});
         music?.play().catch(() => {});
       }
     });

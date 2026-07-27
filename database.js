@@ -132,6 +132,7 @@
   // ─── MODAL ───────────────────────────────────────
 
   function openModal(mode, record) {
+    document.getElementById('site-background-video')?.pause();
     editingId = mode === 'edit' ? record.id : null;
     photoFile = null;
     photoIsUrl = null;
@@ -175,6 +176,9 @@
     editingId = null;
     photoFile = null;
     photoIsUrl = null;
+    if (document.documentElement.dataset.section === 'home') {
+      document.getElementById('site-background-video')?.play().catch(() => {});
+    }
   }
 
   // ─── PHOTO PREVIEW ───────────────────────────────
