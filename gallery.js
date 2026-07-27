@@ -87,7 +87,7 @@
       ? `<video src="${file.download_url}" muted preload="metadata" loop></video>`
       : `<img src="${file.download_url}" alt="${file.name}" loading="lazy"/>`;
 
-    const displayName = decodeFilename(file.name);
+    const displayName = escapeHTML(decodeFilename(file.name));
 
     card.innerHTML = `
       ${badge}
@@ -204,6 +204,12 @@
   function decodeFilename(name) {
     // Remove timestamp prefix like "1234567890_"
     return name.replace(/^\d+_/, '');
+  }
+
+  function escapeHTML(value) {
+    return String(value || '').replace(/[&<>"']/g, character => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    })[character]);
   }
 
   // ─── EXPORT ─────────────────────────────────────
