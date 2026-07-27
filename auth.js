@@ -152,6 +152,7 @@
         <video id="site-background-video" playsinline muted loop preload="metadata"></video>
         <div class="video-background-shade"></div>
       </div>
+      <audio id="voice-track" src="music/jeXfXt5eaCyPmIG6oKRfNA.mp3" loop preload="auto"></audio>
       <div id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
         <div class="access-noise"></div>
         <form id="access-form" class="access-card" autocomplete="off">
@@ -282,9 +283,14 @@
 
   function startSiteAudio() {
     const backgroundMusic = document.getElementById('bg-music');
+    const voiceTrack = document.getElementById('voice-track');
     if (backgroundMusic) {
-      backgroundMusic.volume = .10;
+      backgroundMusic.volume = .06;
       backgroundMusic.play().catch(() => {});
+    }
+    if (voiceTrack) {
+      voiceTrack.volume = .42;
+      voiceTrack.play().catch(() => {});
     }
   }
 
@@ -292,7 +298,7 @@
     const overlay = document.getElementById('site-video-background');
     const video = document.getElementById('site-background-video');
     overlay.classList.remove('hidden');
-    video.src = 'music/LEGION_90s_FINAL_DRAFT.mp4';
+    video.src = 'music/LEGION_90s_WEB.mp4';
     video.muted = true;
     video.volume = 0;
     video.loop = true;
@@ -304,12 +310,15 @@
     document.addEventListener('visibilitychange', () => {
       const video = document.getElementById('site-background-video');
       const music = document.getElementById('bg-music');
+      const voiceTrack = document.getElementById('voice-track');
       if (document.hidden) {
         video?.pause();
         music?.pause();
+        voiceTrack?.pause();
       } else if (currentRole) {
         video?.play().catch(() => {});
         music?.play().catch(() => {});
+        voiceTrack?.play().catch(() => {});
       }
     });
   }

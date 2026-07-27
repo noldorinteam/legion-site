@@ -1564,6 +1564,7 @@ html:not([data-role="admin"]) #section-admin { display:none !important; }
 .gallery-card { border-radius:13px; overflow:hidden; box-shadow:0 16px 35px rgba(0,0,0,.3); }
 .section { animation:section-enter .48s cubic-bezier(.22,.8,.22,1); }
 .floating-terminal,#music-toggle,#lightbox-content,#db-modal-box { backdrop-filter:none !important; }
+.gallery-card,.db-table-wrap,.about-card,.upload-panel { content-visibility:auto; contain-intrinsic-size:300px; }
 
 @keyframes section-enter { from{opacity:0;transform:translateY(12px);filter:blur(4px)} to{opacity:1;transform:none;filter:none} }
 @media (max-width:900px) {
