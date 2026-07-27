@@ -80,8 +80,8 @@
           <span id="intro-stage">SEQUENCE 01 / 02</span>
         </div>
         <div class="intro-progress"><span id="intro-progress-fill"></span></div>
-        <button id="intro-skip" type="button">GEÇ <span>→</span></button>
       </div>
+      <audio id="login-music" src="music/jeXfXt5eaCyPmIG6oKRfNA.mp3" loop preload="auto"></audio>
       <div id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
         <div class="access-noise"></div>
         <form id="access-form" class="access-card" autocomplete="off">
@@ -103,6 +103,8 @@
     const nav = document.querySelector('.nav-links');
     if (nav) nav.insertAdjacentHTML('beforeend',
       '<li id="admin-nav-item" class="hidden"><a href="#" class="nav-link" data-section="admin" id="nav-admin">YÖNETİM</a></li>');
+    document.querySelector('.nav-status')?.insertAdjacentHTML('beforebegin',
+      '<button id="global-logout-btn" class="global-logout" type="button" title="Oturumu kapat">ÇIKIŞ <span>↗</span></button>');
 
     document.getElementById('main-site')?.insertAdjacentHTML('beforeend', `
       <section id="section-admin" class="section hidden">
@@ -177,7 +179,21 @@
     const gate = document.getElementById('access-gate');
     gate.classList.add('access-granted');
     setTimeout(() => gate.remove(), 650);
+    startSiteAudio();
     playIntroSequence();
+  }
+
+  function startSiteAudio() {
+    const loginMusic = document.getElementById('login-music');
+    const backgroundMusic = document.getElementById('bg-music');
+    if (loginMusic) {
+      loginMusic.volume = .68;
+      loginMusic.play().catch(() => {});
+    }
+    if (backgroundMusic) {
+      backgroundMusic.volume = .22;
+      backgroundMusic.play().catch(() => {});
+    }
   }
 
   function playTone(frequency = 92, duration = .16) {
@@ -203,61 +219,40 @@
     const video = document.getElementById('intro-video');
     const stage = document.getElementById('intro-stage');
     const progress = document.getElementById('intro-progress-fill');
-    const sequences = [
-      { src: 'music/LEGION_FiveM_Hacker_Intro_1080p.mp4', volume: 1, label: 'SEQUENCE 01 / 02' },
-      { src: 'music/LEGION_90s_FINAL_DRAFT.mp4', volume: .18, label: 'SEQUENCE 02 / 02' }
-    ];
-    let index = 0;
     let finished = false;
 
     const finish = () => {
       if (finished) return;
       finished = true;
-      video.pause();
-      overlay.classList.add('intro-exit');
-      setTimeout(() => overlay.classList.add('hidden'), 700);
-      document.dispatchEvent(new CustomEvent('legion:authenticated'));
-      const music = document.getElementById('bg-music');
-      if (music) {
-        music.volume = .34;
-        music.play().catch(() => {});
-      }
-    };
-
-    const playCurrent = () => {
-      if (index >= sequences.length) return finish();
-      const current = sequences[index];
-      stage.textContent = current.label;
-      progress.style.width = '0%';
-      video.src = current.src;
-      video.volume = current.volume;
+      video.src = 'music/LEGION_90s_FINAL_DRAFT.mp4';
+      video.muted = true;
+      video.volume = 0;
+      video.loop = true;
       video.load();
-      video.play().catch(() => {
-        video.muted = true;
-        video.play().catch(finish);
-      });
+      video.play().catch(() => {});
+      overlay.classList.add('background-mode');
+      document.dispatchEvent(new CustomEvent('legion:authenticated'));
     };
 
     video.addEventListener('timeupdate', () => {
       if (video.duration) progress.style.width = `${Math.min(100, video.currentTime / video.duration * 100)}%`;
     });
-    video.addEventListener('ended', () => {
-      playTone(index === 0 ? 78 : 126, .22);
-      index += 1;
-      playCurrent();
-    });
-    video.addEventListener('error', () => {
-      index += 1;
-      playCurrent();
-    });
-    document.getElementById('intro-skip').onclick = () => {
-      index += 1;
-      index >= sequences.length ? finish() : playCurrent();
-    };
+    video.addEventListener('ended', finish, { once: true });
+    video.addEventListener('error', finish, { once: true });
 
-    overlay.classList.remove('hidden', 'intro-exit');
+    overlay.classList.remove('hidden', 'intro-exit', 'background-mode');
+    stage.textContent = 'INTRO SEQUENCE';
+    progress.style.width = '0%';
+    video.src = 'music/LEGION_FiveM_Hacker_Intro_1080p.mp4';
+    video.muted = false;
+    video.volume = 1;
+    video.loop = false;
+    video.load();
     playTone(64, .28);
-    playCurrent();
+    video.play().catch(() => {
+      video.muted = true;
+      video.play().catch(finish);
+    });
   }
 
   function bind() {
@@ -325,6 +320,10 @@
     });
 
     document.getElementById('logout-btn')?.addEventListener('click', () => {
+      sessionStorage.removeItem(SESSION_KEY);
+      location.reload();
+    });
+    document.getElementById('global-logout-btn')?.addEventListener('click', () => {
       sessionStorage.removeItem(SESSION_KEY);
       location.reload();
     });

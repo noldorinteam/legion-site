@@ -110,7 +110,9 @@
   function startOnce() {
     if (started) return;
     started = true;
-    runBoot();
+    const bootScreen = document.getElementById('boot-screen');
+    if (bootScreen) bootScreen.classList.add('hidden');
+    launchMainSite();
   }
 
   // Authentication is completed before the boot sequence is allowed to run.
