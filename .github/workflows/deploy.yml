@@ -1,0 +1,37 @@
+name: Deploy LEGION Site to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject config.js with secrets
+        run: |
+          cat > config.js << 'EOF'
+          window.LEGION_CONFIG = {
+            githubToken: "${{ secrets.LEGION_TOKEN }}",
+            githubUser:  "noldorinteam",
+            githubRepo:  "legion-media",
+            branch:      "main",
+            dbFile:      "data/records.json"
+          };
+          EOF
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          exclude_assets: '.github,README.md,.gitignore'

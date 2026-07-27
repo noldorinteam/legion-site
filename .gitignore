@@ -1,0 +1,5 @@
+music/*.mp3
+music/*.wav
+music/*.ogg
+.git/
+*.log
