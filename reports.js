@@ -75,6 +75,7 @@
   }
 
   async function uploadPhoto(file) {
+    file = await window.ImageUtils.optimize(file, { maxDimension: 1600, quality: 0.8 });
     const extension = (file.name.split('.').pop() || 'jpg').replace(/[^a-z0-9]/gi, '').toLowerCase();
     const path = `data/report-photos/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${extension}`;
     const base64 = await new Promise((resolve, reject) => {

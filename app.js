@@ -293,7 +293,11 @@
       for (const [index, file] of filesToUpload.entries()) {
         try {
           const titledName = filesToUpload.length > 1 ? `${mediaTitle}-${index + 1}` : mediaTitle;
-          const result = await GithubAPI.uploadFile(file, logUploadLine, titledName);
+          const uploadFile = file.type.startsWith('image/')
+            ? await window.ImageUtils.optimize(file, { maxDimension: 1600, quality: 0.8 })
+            : file;
+          await window.ImageUtils.nextFrame();
+          const result = await GithubAPI.uploadFile(uploadFile, logUploadLine, titledName);
           Gallery.addMedia({
             name: result.name,
             path: result.path,
