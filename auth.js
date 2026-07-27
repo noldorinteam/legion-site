@@ -272,6 +272,7 @@
     clearFailures();
     setSession(role);
     applyRole();
+    document.documentElement.classList.add('performance-mode');
     const gate = document.getElementById('access-gate');
     gate.classList.add('access-granted');
     setTimeout(() => gate.remove(), 650);
@@ -283,7 +284,7 @@
   function startSiteAudio() {
     const backgroundMusic = document.getElementById('bg-music');
     if (backgroundMusic) {
-      backgroundMusic.volume = .35;
+      backgroundMusic.volume = .38;
       backgroundMusic.play().catch(() => {});
     }
   }
@@ -292,7 +293,7 @@
     const overlay = document.getElementById('site-video-background');
     const video = document.getElementById('site-background-video');
     overlay.classList.remove('hidden');
-    video.src = 'music/LEGION_90s_WEB.mp4';
+    video.src = 'music/LEGION_90s_WEB_LITE.mp4';
     video.muted = true;
     video.volume = 0;
     video.loop = true;
