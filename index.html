@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LEGION — FiveM Hacker Grubu</title>
+  <meta name="description" content="LEGION — FiveM'in en elit hacker grubu. Sınırları zorlayan, sistemi ele geçiren ekip."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       BOOT SCREEN / HACKING LOADING SEQUENCE
+  ═══════════════════════════════════════════ -->
+  <div id="boot-screen">
+    <div id="scanline"></div>
+    <div id="boot-content">
+      <div id="boot-skull">
+        <pre id="skull-art">
+  ██╗     ███████╗ ██████╗ ██╗ ██████╗ ███╗   ██╗
+  ██║     ██╔════╝██╔════╝ ██║██╔═══██╗████╗  ██║
+  ██║     █████╗  ██║  ███╗██║██║   ██║██╔██╗ ██║
+  ██║     ██╔══╝  ██║   ██║██║██║   ██║██║╚██╗██║
+  ███████╗███████╗╚██████╔╝██║╚██████╔╝██║ ╚████║
+  ╚══════╝╚══════╝ ╚═════╝ ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
+        </pre>
+      </div>
+      <div id="boot-log"></div>
+      <div id="boot-progress-bar">
+        <div id="boot-progress-fill"></div>
+        <span id="boot-progress-text">0%</span>
+      </div>
+      <div id="boot-blink">[ SİSTEME BAĞLANIYOR... ]</div>
+    </div>
+    <canvas id="matrix-canvas"></canvas>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       GLITCH TRANSITION OVERLAY
+  ═══════════════════════════════════════════ -->
+  <div id="glitch-overlay" class="hidden">
+    <div id="glitch-binary">01011001</div>
+    <div id="glitch-label">GALERİ</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       DATABASE MODAL — Yeni Kayıt / Düzenle
+  ═══════════════════════════════════════════ -->
+  <div id="db-modal" class="hidden">
+    <div id="db-modal-overlay"></div>
+    <div id="db-modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">◈</span>
+          <h3 id="modal-title">YENİ VERİ KAYDI</h3>
+        </div>
+        <button id="db-modal-close">✕</button>
+      </div>
+      <div class="modal-scanline"></div>
+
+      <form id="db-form" novalidate>
+        <!-- Ad Soyad -->
+        <div class="form-group">
+          <label class="form-label" for="field-name">
+            <span class="field-icon">◆</span> AD SOYAD / OYUNCU ADI
+            <span class="required-mark">*</span>
+          </label>
+          <input type="text" id="field-name" class="form-input" placeholder="John Doe / xX_Hacker_Xx" autocomplete="off"/>
+          <div class="field-error" id="err-name"></div>
+        </div>
+
+        <!-- Plaka -->
+        <div class="form-group">
+          <label class="form-label" for="field-plate">
+            <span class="field-icon">◆</span> PLAKA (ARAÇ PLAKALARI)
+            <span class="required-mark">*</span>
+          </label>
+          <input type="text" id="field-plate" class="form-input" placeholder="34 ABC 123" autocomplete="off" style="text-transform:uppercase"/>
+          <div class="field-error" id="err-plate"></div>
+        </div>
+
+        <!-- Telefon -->
+        <div class="form-group">
+          <label class="form-label" for="field-phone">
+            <span class="field-icon">◆</span> TELEFON NUMARASI
+            <span class="required-mark">*</span>
+          </label>
+          <input type="text" id="field-phone" class="form-input" placeholder="555-XXX-XXXX" autocomplete="off"/>
+          <div class="field-error" id="err-phone"></div>
+        </div>
+
+        <!-- Meslek -->
+        <div class="form-group">
+          <label class="form-label" for="field-job">
+            <span class="field-icon">◆</span> MESLEK / GÖREV
+            <span class="required-mark">*</span>
+          </label>
+          <input type="text" id="field-job" class="form-input" placeholder="Polis / Soyguncu / Tüccar..." autocomplete="off"/>
+          <div class="field-error" id="err-job"></div>
+        </div>
+
+        <!-- Adres / Lokasyon -->
+        <div class="form-group">
+          <label class="form-label" for="field-location">
+            <span class="field-icon">◆</span> ADRES / LOKASYON
+            <span class="required-mark">*</span>
+          </label>
+          <input type="text" id="field-location" class="form-input" placeholder="Los Santos, Vinewood Hills..." autocomplete="off"/>
+          <div class="field-error" id="err-location"></div>
+        </div>
+
+        <!-- Not / Açıklama -->
+        <div class="form-group">
+          <label class="form-label" for="field-note">
+            <span class="field-icon">◆</span> NOT / AÇIKLAMA
+            <span class="required-mark">*</span>
+          </label>
+          <textarea id="field-note" class="form-input form-textarea" placeholder="Hedef hakkında bilinen detaylar, tehlike seviyesi, özel notlar..."></textarea>
+          <div class="field-error" id="err-note"></div>
+        </div>
+
+        <!-- Fotoğraf -->
+        <div class="form-group">
+          <label class="form-label">
+            <span class="field-icon">◆</span> FOTOĞRAF
+            <span class="required-mark">*</span>
+          </label>
+          <div class="photo-upload-zone" id="photo-zone">
+            <input type="file" id="field-photo" accept="image/*" hidden/>
+            <div id="photo-preview-wrap">
+              <div class="photo-placeholder" id="photo-placeholder">
+                <span class="photo-icon">⬡</span>
+                <span>FOTOĞRAF SEÇ</span>
+                <span class="photo-sub">PNG, JPG, WEBP — maks 10MB</span>
+              </div>
+              <img id="photo-preview" src="" alt="" style="display:none;"/>
+            </div>
+          </div>
+          <div class="field-error" id="err-photo"></div>
+        </div>
+
+        <!-- Gizli alan: edit mode -->
+        <input type="hidden" id="field-edit-id" value=""/>
+
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" id="modal-cancel-btn">İPTAL ET</button>
+          <button type="submit" class="modal-btn submit" id="modal-submit-btn">
+            <span id="modal-btn-label">VERİTABANINA İŞLE</span>
+            <span id="modal-btn-spinner" class="spinner hidden"></span>
+          </button>
+        </div>
+      </form>
+
+      <!-- Push log terminal -->
+      <div class="modal-terminal">
+        <div class="terminal-header">
+          <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+          <span class="terminal-title">db@legion:~$ git push origin main</span>
+        </div>
+        <div class="terminal-body" id="modal-log" style="height:100px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN SITE
+  ═══════════════════════════════════════════ -->
+  <div id="main-site" class="hidden">
+
+    <!-- BACKGROUND EFFECTS -->
+    <canvas id="bg-matrix"></canvas>
+    <div id="bg-grid"></div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+      <div class="nav-brand">
+        <span class="nav-bracket">[</span>
+        <span class="nav-logo-text">LEGION</span>
+        <span class="nav-bracket">]</span>
+        <span class="nav-tag">v2.0.4</span>
+      </div>
+      <ul class="nav-links">
+        <li><a href="#" class="nav-link active" data-section="home"     id="nav-home">ANA SAYFA</a></li>
+        <li><a href="#" class="nav-link"         data-section="database" id="nav-database">VERİTABANI</a></li>
+        <li><a href="#" class="nav-link"         data-section="gallery"  id="nav-gallery">GALERİ</a></li>
+        <li><a href="#" class="nav-link"         data-section="upload"   id="nav-upload">YÜKLE</a></li>
+        <li><a href="#" class="nav-link"         data-section="about"    id="nav-about">HAKKINDA</a></li>
+      </ul>
+      <div class="nav-status">
+        <span class="status-dot"></span>
+        <span class="status-text">SİSTEM AKTİF</span>
+      </div>
+    </nav>
+
+    <!-- AUDIO -->
+    <audio id="bg-music" loop>
+      <source src="music/Hacking Music  (Welcome To Our World) - NexMarket.mp3" type="audio/mpeg"/>
+    </audio>
+    <button id="music-toggle" title="Müziği aç/kapat">
+      <span id="music-icon">♪</span>
+      <span id="music-label">MÜZİK</span>
+    </button>
+
+    <!-- ═══════ SECTION: HOME ═══════ -->
+    <section id="section-home" class="section active">
+      <div class="hero-container">
+        <div class="hero-glitch-wrapper">
+          <h1 class="hero-title glitch-text" data-text="LEGION">LEGION</h1>
+        </div>
+        <div class="hero-subtitle-wrapper">
+          <span class="hero-sub-prefix">&gt;&gt;&gt;</span>
+          <span class="hero-subtitle" id="typed-subtitle"></span>
+          <span class="cursor-blink">_</span>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-members">00</div>
+            <div class="stat-label">ÜYELER</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-ops">00</div>
+            <div class="stat-label">OPERASYONLAR</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-targets">00</div>
+            <div class="stat-label">HEDEFLER</div>
+          </div>
+        </div>
+        <div class="hero-binary-bar" id="binary-bar"></div>
+        <div class="hero-cta-row">
+          <button class="cta-button" id="enter-gallery-btn">
+            <span class="btn-glitch">GALERİYE GİR</span>
+            <span class="btn-arrow">→</span>
+          </button>
+          <button class="cta-button cta-db" id="enter-db-btn">
+            <span class="btn-glitch">VERİTABANI</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+      <div class="floating-terminal">
+        <div class="terminal-header">
+          <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+          <span class="terminal-title">legion@root:~$</span>
+        </div>
+        <div class="terminal-body" id="terminal-body"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ SECTION: DATABASE ═══════ -->
+    <section id="section-database" class="section hidden">
+      <div class="section-header-row">
+        <div>
+          <h2 class="section-title"><span class="title-prefix">//</span> VERİTABANI</h2>
+          <p class="section-desc">FiveM operasyonel istihbarat kayıtları — tüm değişiklikler GitHub'a anlık gönderilir</p>
+        </div>
+        <button class="add-entry-btn" id="add-entry-btn">
+          <span class="add-icon">+</span>
+          <span>YENİ VERİ EKLE</span>
+        </button>
+      </div>
+
+      <!-- Search bar -->
+      <div class="db-search-bar">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="db-search" class="db-search-input" placeholder="Ad, plaka, telefon ile ara..."/>
+        <span class="search-count" id="search-count">0 kayıt</span>
+      </div>
+
+      <!-- Database table -->
+      <div class="db-table-wrap" id="db-table-wrap">
+        <div class="db-loading" id="db-loading">
+          <span class="spinner-lg"></span>
+          <p>Kayıtlar yükleniyor...</p>
+        </div>
+        <div class="db-empty hidden" id="db-empty">
+          <div class="empty-icon">◈</div>
+          <p>Henüz kayıt yok.</p>
+          <p class="empty-sub">"YENİ VERİ EKLE" butonunu kullan.</p>
+        </div>
+        <table class="db-table hidden" id="db-table">
+          <thead>
+            <tr>
+              <th class="th-photo">FOTOĞRAF</th>
+              <th>AD SOYAD</th>
+              <th>PLAKA</th>
+              <th>TELEFON</th>
+              <th>MESLEK</th>
+              <th>LOKASYON</th>
+              <th>NOT</th>
+              <th class="th-actions">İŞLEMLER</th>
+            </tr>
+          </thead>
+          <tbody id="db-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════ SECTION: GALLERY ═══════ -->
+    <section id="section-gallery" class="section hidden">
+      <div class="section-header">
+        <h2 class="section-title"><span class="title-prefix">//</span> MEDİA ARŞİVİ</h2>
+        <p class="section-desc">Sınıflandırılmış görsel ve video kayıtları</p>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all"   id="filter-all">TÜMÜ</button>
+        <button class="filter-btn"        data-filter="image" id="filter-images">GÖRSELLER</button>
+        <button class="filter-btn"        data-filter="video" id="filter-videos">VİDEOLAR</button>
+      </div>
+      <div id="gallery-grid" class="gallery-grid">
+        <div class="gallery-empty" id="gallery-empty">
+          <div class="empty-icon">⬡</div>
+          <p>Henüz medya yüklenmedi.</p>
+          <p class="empty-sub">İlk dosyayı sen yükle, arşivi doldur.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════ SECTION: UPLOAD ═══════ -->
+    <section id="section-upload" class="section hidden">
+      <div class="section-header">
+        <h2 class="section-title"><span class="title-prefix">//</span> DOSYA YÜKLE</h2>
+        <p class="section-desc">GitHub deposuna otomatik gönderim</p>
+      </div>
+      <div class="upload-panel">
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">⬆</div>
+          <p class="upload-main-text">DOSYAYI SÜRÜKLE &amp; BIRAK</p>
+          <p class="upload-sub-text">veya tıkla — PNG, JPG, GIF, MP4, WEBM</p>
+          <input type="file" id="file-input" accept="image/*,video/*" multiple hidden/>
+        </div>
+        <div class="upload-preview-container" id="upload-preview-container" style="display:none;">
+          <div id="upload-preview-grid"></div>
+          <div class="upload-actions">
+            <button class="action-btn danger"  id="clear-upload-btn">İPTAL ET</button>
+            <button class="action-btn primary" id="do-upload-btn">
+              <span id="upload-btn-text">GİTHUB'A GÖNDER</span>
+              <span id="upload-spinner" class="spinner hidden"></span>
+            </button>
+          </div>
+        </div>
+        <div id="upload-status" class="upload-status hidden"></div>
+      </div>
+      <div class="upload-terminal">
+        <div class="terminal-header">
+          <span class="t-dot red"></span><span class="t-dot yellow"></span><span class="t-dot green"></span>
+          <span class="terminal-title">upload@legion:~$ git push origin main</span>
+        </div>
+        <div class="terminal-body" id="upload-log"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ SECTION: ABOUT ═══════ -->
+    <section id="section-about" class="section hidden">
+      <div class="section-header">
+        <h2 class="section-title"><span class="title-prefix">//</span> SİSTEM BİLGİSİ</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-card">
+          <div class="about-card-icon">⚡</div>
+          <h3>KİMİZ?</h3>
+          <p>LEGION, FiveM sunucularında faaliyet gösteren, sistemi şekillendirmek için kurulmuş seçkin bir hacker grubudur. Kod bizim silahımız, ağ bizim alanımızdır.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-icon">⬡</div>
+          <h3>MİSYON</h3>
+          <p>FiveM dünyasında sınırları zorlamak, yeni operasyonlar geliştirmek ve sistemin açıklarını keşfetmek. Biz sadece oyun oynamıyoruz — sistemi kontrol ediyoruz.</p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-icon">◈</div>
+          <h3>KURALLAR</h3>
+          <p>Sadakat. Sessizlik. Verimlilik. LEGION'da her üye bir komut satırı gibi çalışır — kesin, hızlı ve hatasız.</p>
+        </div>
+      </div>
+      <div class="about-manifesto">
+        <pre class="manifesto-text">
+&gt; Biz isim değil, bir fikirriz.
+&gt; Fikirleri öldüremezsiniz.
+&gt; LEGION — Biz Birleğiz, Biz Çoğuz.
+&gt; [SİSTEM KONTROL ALTINDA]
+        </pre>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer id="footer">
+      <div class="footer-content">
+        <span class="footer-brand">LEGION © 2026</span>
+        <span class="footer-divider">|</span>
+        <span class="footer-tag">FiveM Operasyonel Birlik</span>
+        <span class="footer-divider">|</span>
+        <span class="footer-code">0x4C4547494F4E</span>
+      </div>
+    </footer>
+
+  </div><!-- /main-site -->
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="hidden">
+    <div id="lightbox-overlay"></div>
+    <div id="lightbox-content">
+      <button id="lightbox-close">✕</button>
+      <img id="lightbox-img" src="" alt=""/>
+      <video id="lightbox-video" controls></video>
+    </div>
+  </div>
+
+  <!-- CONFIG — config.js dosyasından yüklenir (git'e eklenmez) -->
+  <script src="config.js"></script>
+  <script src="matrix.js"></script>
+  <script src="boot.js"></script>
+  <script src="github.js"></script>
+  <script src="database.js"></script>
+  <script src="gallery.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
