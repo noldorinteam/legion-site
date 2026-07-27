@@ -7,6 +7,7 @@
   const SESSION_KEY = 'legion_session_v2';
   const CODES_KEY = 'legion_access_codes_v2';
   const LOCK_KEY = 'legion_login_lock_v2';
+  const REMOTE_CODES_FILE = 'data/access-codes.json';
   const SESSION_TTL = 8 * 60 * 60 * 1000;
   let currentRole = null;
 
@@ -27,6 +28,81 @@
 
   function saveCodes(codes) {
     localStorage.setItem(CODES_KEY, JSON.stringify(codes.slice(0, 50)));
+  }
+
+  function githubHeaders(withJson = false) {
+    const config = window.LEGION_CONFIG || {};
+    return {
+      Authorization: `token ${config.githubToken || ''}`,
+      Accept: 'application/vnd.github.v3+json',
+      ...(withJson ? { 'Content-Type': 'application/json' } : {})
+    };
+  }
+
+  function githubCodesUrl() {
+    const config = window.LEGION_CONFIG || {};
+    return `https://api.github.com/repos/${config.githubUser}/${config.githubRepo}/contents/${REMOTE_CODES_FILE}`;
+  }
+
+  function encodeJSON(value) {
+    const bytes = new TextEncoder().encode(JSON.stringify(value, null, 2));
+    let binary = '';
+    bytes.forEach(byte => { binary += String.fromCharCode(byte); });
+    return btoa(binary);
+  }
+
+  function decodeJSON(value) {
+    const binary = atob(value.replace(/\s/g, ''));
+    const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  }
+
+  async function fetchRemoteCodes() {
+    const response = await fetch(`${githubCodesUrl()}?t=${Date.now()}`, {
+      headers: githubHeaders(),
+      cache: 'no-store'
+    });
+    if (response.status === 404) return { codes: [], sha: null };
+    if (!response.ok) throw new Error(`Kod listesi okunamadı (${response.status})`);
+    const file = await response.json();
+    const payload = decodeJSON(file.content);
+    const now = Date.now();
+    return {
+      codes: (Array.isArray(payload) ? payload : payload.codes || [])
+        .filter(code => !code.expiresAt || code.expiresAt > now),
+      sha: file.sha
+    };
+  }
+
+  async function pushRemoteCodes(codes, message, retry = true) {
+    const remote = await fetchRemoteCodes();
+    const body = {
+      message,
+      content: encodeJSON({ version: 1, updatedAt: new Date().toISOString(), codes: codes.slice(0, 100) }),
+      branch: window.LEGION_CONFIG.branch,
+      ...(remote.sha ? { sha: remote.sha } : {})
+    };
+    const response = await fetch(githubCodesUrl(), {
+      method: 'PUT',
+      headers: githubHeaders(true),
+      body: JSON.stringify(body)
+    });
+    if (response.status === 409 && retry) return pushRemoteCodes(codes, message, false);
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.message || `Kod push hatası (${response.status})`);
+    }
+    return response.json();
+  }
+
+  function remoteShape(code) {
+    return {
+      id: code.id,
+      hash: code.hash,
+      singleUse: code.singleUse,
+      createdAt: code.createdAt,
+      expiresAt: code.expiresAt
+    };
   }
 
   function isAdmin() { return currentRole === 'admin'; }
@@ -123,6 +199,7 @@
               <select id="code-duration"><option value="24">24 SAAT</option><option value="168">7 GÜN</option><option value="720">30 GÜN</option><option value="0">SÜRESİZ</option></select>
               <label class="check-row"><input id="code-single-use" type="checkbox" checked><span>TEK KULLANIMLIK</span></label>
               <button id="generate-code">GÜVENLİ ANAHTAR ÜRET</button>
+              <div id="code-sync-status" class="code-sync-status" aria-live="polite"></div>
               <div id="generated-code" class="generated-code"><span>ANAHTAR BEKLENİYOR</span></div>
               <button id="copy-code" class="copy-code" disabled>KOPYALA</button>
             </div>
@@ -148,9 +225,21 @@
       <div class="code-row"><div><strong>${code.value}</strong><small>${code.singleUse ? 'TEK KULLANIM' : 'ÇOKLU'} · ${code.expiresAt ? new Date(code.expiresAt).toLocaleDateString('tr-TR') : 'SÜRESİZ'}</small></div>
       <button data-revoke="${code.id}" title="İptal et">×</button></div>`).join('') :
       '<div class="no-codes">AKTİF ANAHTAR YOK</div>';
-    list.querySelectorAll('[data-revoke]').forEach(btn => btn.addEventListener('click', () => {
-      saveCodes(codes.filter(code => code.id !== btn.dataset.revoke));
-      renderCodes();
+    list.querySelectorAll('[data-revoke]').forEach(btn => btn.addEventListener('click', async () => {
+      const remaining = codes.filter(code => code.id !== btn.dataset.revoke);
+      btn.disabled = true;
+      try {
+        const remote = await fetchRemoteCodes();
+        await pushRemoteCodes(
+          remote.codes.filter(code => code.id !== btn.dataset.revoke),
+          '[LEGION] Erişim kodu iptal edildi'
+        );
+        saveCodes(remaining);
+        renderCodes();
+      } catch (error) {
+        btn.disabled = false;
+        alert(`Kod iptal edilemedi: ${error.message}`);
+      }
     }));
   }
 
@@ -165,10 +254,23 @@
     const hash = await digest(value);
     if (hash === ADMIN_HASH) return 'admin';
     if (hash === ACCESS_HASH) return 'member';
-    const codes = loadCodes();
-    const match = codes.find(code => code.hash === hash);
+    let remoteCodes = [];
+    try {
+      remoteCodes = (await fetchRemoteCodes()).codes;
+    } catch (_) {
+      remoteCodes = loadCodes();
+    }
+    const match = remoteCodes.find(code => code.hash === hash);
     if (!match) return null;
-    if (match.singleUse) saveCodes(codes.filter(code => code.id !== match.id));
+    if (match.singleUse) {
+      try {
+        await pushRemoteCodes(
+          remoteCodes.filter(code => code.id !== match.id),
+          '[LEGION] Tek kullanımlık erişim kodu tüketildi'
+        );
+      } catch (_) { return null; }
+      saveCodes(loadCodes().filter(code => code.id !== match.id));
+    }
     return 'member';
   }
 
@@ -281,6 +383,8 @@
     document.getElementById('generate-code')?.addEventListener('click', async () => {
       if (!isAdmin()) return;
       const customInput = document.getElementById('custom-code');
+      const syncStatus = document.getElementById('code-sync-status');
+      const generateButton = document.getElementById('generate-code');
       const customValue = customInput.value.trim();
       const value = customValue || randomCode();
       if (customValue && (customValue.length < 4 || customValue.length > 32)) {
@@ -296,15 +400,37 @@
         customInput.reportValidity();
         return;
       }
-      codes.unshift({
+      const newCode = {
         id: crypto.randomUUID(),
         value,
         hash: await digest(value),
         singleUse: document.getElementById('code-single-use').checked,
         createdAt: Date.now(),
         expiresAt: hours ? Date.now() + hours * 3600000 : 0
-      });
+      };
+      generateButton.disabled = true;
+      syncStatus.className = 'code-sync-status syncing';
+      syncStatus.textContent = 'GITHUB’A PUSH EDİLİYOR...';
+      try {
+        const remote = await fetchRemoteCodes();
+        if (remote.codes.some(code => code.hash === newCode.hash)) {
+          throw new Error('Bu kod ortak sistemde zaten kullanılıyor.');
+        }
+        await pushRemoteCodes(
+          [remoteShape(newCode), ...remote.codes],
+          '[LEGION] Yeni erişim kodu eklendi'
+        );
+      } catch (error) {
+        generateButton.disabled = false;
+        syncStatus.className = 'code-sync-status error';
+        syncStatus.textContent = `PUSH BAŞARISIZ · ${error.message}`;
+        return;
+      }
+      codes.unshift(newCode);
       saveCodes(codes);
+      generateButton.disabled = false;
+      syncStatus.className = 'code-sync-status success';
+      syncStatus.textContent = 'PUSH TAMAMLANDI · KOD TÜM CİHAZLARDA AKTİF';
       const output = document.getElementById('generated-code');
       output.innerHTML = `<small>YENİ ERİŞİM ANAHTARI</small><strong>${value}</strong>`;
       document.getElementById('copy-code').disabled = false;

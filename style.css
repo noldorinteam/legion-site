@@ -1460,6 +1460,7 @@ body {
 #access-submit b { float:right; font-size:17px; }
 #access-submit:hover,#generate-code:hover { background:#a6ffcd; box-shadow:0 0 25px rgba(0,255,126,.25); }
 #access-submit:disabled { opacity:.5; cursor:wait; }
+#generate-code:disabled { opacity:.48; cursor:wait; }
 #access-error { height:20px; padding-top:12px; color:#ff4757; font-size:11px; text-align:center; letter-spacing:1px; }
 .access-meta { display:flex; justify-content:space-between; margin-top:20px; padding-top:16px; border-top:1px solid #163323; color:#4d8064; font-size:9px; }
 .access-meta span:first-child { color:#00ca68; }
@@ -1487,6 +1488,10 @@ body {
 .custom-code-wrap span { padding-left:13px; color:#00a953; font:11px 'Share Tech Mono',monospace; }
 #custom-code { width:100%; padding:14px 12px; border:0; outline:0; color:#dfffee; background:transparent; font:14px 'Share Tech Mono',monospace; letter-spacing:1px; }
 .custom-code-help { display:block; margin:0 0 22px; color:#5c7e6b; font:10px 'Share Tech Mono',monospace; }
+.code-sync-status { min-height:17px; margin-top:10px; text-align:center; font:9px 'Share Tech Mono',monospace; letter-spacing:1px; }
+.code-sync-status.syncing { color:#f3c969; animation:pulse 1s infinite; }
+.code-sync-status.success { color:#00ff7e; }
+.code-sync-status.error { color:#ff5969; }
 .generator-card select { width:100%; padding:14px; margin-bottom:20px; color:#dfffee; border:1px solid #275b3c; background:#05120b; font:13px 'Share Tech Mono',monospace; }
 .check-row { display:flex !important; align-items:center; gap:9px; cursor:pointer; }
 .check-row input { accent-color:#00ff7e; }
