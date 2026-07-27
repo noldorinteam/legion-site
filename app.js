@@ -165,6 +165,10 @@
     let si = 0, ci = 0, deleting = false;
 
     function tick() {
+      if (document.hidden) {
+        setTimeout(tick, 1000);
+        return;
+      }
       const text = SUBTITLES[si];
       if (!deleting) {
         el.textContent = text.slice(0, ++ci);
@@ -180,7 +184,7 @@
           si = (si + 1) % SUBTITLES.length;
         }
       }
-      setTimeout(tick, deleting ? 40 : 70);
+      setTimeout(tick, deleting ? 80 : 120);
     }
     tick();
   }
@@ -206,7 +210,7 @@
       bar.textContent = Array.from({length: 160}, () => Math.random() > 0.5 ? '1' : '0').join('');
     }
     gen();
-    setInterval(gen, 300);
+    setInterval(() => { if (!document.hidden) gen(); }, 1200);
   }
 
   // ─── UPLOAD HANDLER ──────────────────────────────

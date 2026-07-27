@@ -1565,6 +1565,12 @@ html:not([data-role="admin"]) #section-admin { display:none !important; }
 .section { animation:section-enter .48s cubic-bezier(.22,.8,.22,1); }
 .floating-terminal,#music-toggle,#lightbox-content,#db-modal-box { backdrop-filter:none !important; }
 .gallery-card,.db-table-wrap,.about-card,.upload-panel { content-visibility:auto; contain-intrinsic-size:300px; }
+.performance-mode #bg-grid,
+.performance-mode .glitch-text::before,
+.performance-mode .glitch-text::after { display:none !important; }
+.performance-mode .hero-title,
+.performance-mode .status-dot,
+.performance-mode #music-icon { animation:none !important; }
 
 @keyframes section-enter { from{opacity:0;transform:translateY(12px);filter:blur(4px)} to{opacity:1;transform:none;filter:none} }
 @media (max-width:900px) {

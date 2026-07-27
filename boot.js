@@ -94,7 +94,7 @@
   function tryPlayMusic() {
     const audio = document.getElementById('bg-music');
     if (!audio) return;
-    audio.volume = 0.35;
+    audio.volume = 0.38;
     audio.play().catch(() => {
       // Autoplay blocked — wait for first user interaction
       document.addEventListener('click', () => {
