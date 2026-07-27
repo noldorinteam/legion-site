@@ -206,24 +206,7 @@
 
   function validateForm() {
     clearErrors();
-    let valid = true;
-
-    FIELDS.forEach(f => {
-      const el = document.getElementById(f.id);
-      const val = el.value.trim();
-      if (!val) {
-        showError(f.id, f.errId, `${f.label} boş bırakılamaz.`);
-        valid = false;
-      }
-    });
-
-    // Photo required only for new entries
-    if (!editingId && !photoFile) {
-      showError('photo-zone', 'err-photo', 'Fotoğraf zorunludur.');
-      valid = false;
-    }
-
-    return valid;
+    return true;
   }
 
   function showError(fieldId, errId, msg) {
@@ -250,10 +233,7 @@
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!validateForm()) {
-      appendModalLog('[HATA]  Eksik alanlar var. Lütfen tümünü doldurun.', 'err');
-      return;
-    }
+    validateForm();
 
     const btnLabel   = document.getElementById('modal-btn-label');
     const btnSpinner = document.getElementById('modal-btn-spinner');
@@ -272,6 +252,7 @@
       const job      = document.getElementById('field-job').value.trim();
       const location = document.getElementById('field-location').value.trim();
       const note     = document.getElementById('field-note').value.trim();
+      const displayName = name || 'İsimsiz kayıt';
 
       let photoUrl = photoIsUrl || null;
 
@@ -280,11 +261,6 @@
         appendModalLog('[FOTOĞRAF]  GitHub\'a fotoğraf yükleniyor...', 'out');
         photoUrl = await uploadPhoto(photoFile);
         appendModalLog(`[TAMAM]     Fotoğraf yüklendi.`, 'info');
-      }
-
-      if (!photoUrl) {
-        appendModalLog('[HATA]  Fotoğraf yüklenemedi.', 'err');
-        return;
       }
 
       const now = new Date().toLocaleString('tr-TR');
@@ -296,7 +272,7 @@
           records[idx] = { ...records[idx], name, plate, phone, job, location, note, photoUrl, updatedAt: now };
           appendModalLog(`[GÜNCELLEME] Kayıt düzenleniyor (ID: ${editingId})...`, 'out');
         }
-        await pushDB(records, `[LEGION] Kayıt güncellendi: ${name}`);
+        await pushDB(records, `[LEGION] Kayıt güncellendi: ${displayName}`);
         appendModalLog(`[TAMAM]     Kayıt başarıyla güncellendi ve GitHub'a gönderildi.`, 'info');
         flashRow(editingId);
       } else {
@@ -309,7 +285,7 @@
         };
         records.unshift(newRecord);
         appendModalLog(`[YENİ]      Yeni kayıt oluşturuluyor: ${name}...`, 'out');
-        await pushDB(records, `[LEGION] Yeni kayıt: ${name}`);
+        await pushDB(records, `[LEGION] Yeni kayıt: ${displayName}`);
         appendModalLog(`[TAMAM]     Kayıt başarıyla oluşturuldu ve GitHub'a gönderildi.`, 'info');
       }
 
@@ -383,12 +359,12 @@
             : `<div style="width:52px;height:40px;border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:0.6rem;color:var(--green-dark);">YOK</div>`
           }
         </td>
-        <td class="td-name">${escHtml(rec.name)}</td>
-        <td>${escHtml(rec.plate)}</td>
-        <td>${escHtml(rec.phone)}</td>
-        <td>${escHtml(rec.job)}</td>
-        <td>${escHtml(rec.location)}</td>
-        <td class="td-note" title="${escHtml(rec.note)}">${escHtml(rec.note)}</td>
+        <td class="td-name">${escHtml(rec.name) || '—'}</td>
+        <td>${escHtml(rec.plate) || '—'}</td>
+        <td>${escHtml(rec.phone) || '—'}</td>
+        <td>${escHtml(rec.job) || '—'}</td>
+        <td>${escHtml(rec.location) || '—'}</td>
+        <td class="td-note" title="${escHtml(rec.note)}">${escHtml(rec.note) || '—'}</td>
         <td class="td-actions">
           <div class="td-actions-wrap">
             ${adminActions}

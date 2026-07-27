@@ -48,6 +48,7 @@ body {
 
 /* ─── UTILITY ───────────────────────────────────── */
 .hidden { display: none !important; }
+.required-mark { display:none !important; }
 
 /* ═══════════════════════════════════════════════════
    BOOT / LOADING SCREEN
