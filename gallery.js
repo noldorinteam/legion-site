@@ -79,6 +79,9 @@
     card.dataset.sha  = file.sha;
 
     const badge = `<span class="card-type-badge">${isVid ? 'VİDEO' : 'GÖRSEL'}</span>`;
+    const deleteButton = window.LegionAuth?.isAdmin()
+      ? `<button class="card-btn card-btn-delete" data-path="${file.path}" data-sha="${file.sha}" data-name="${file.name}">SİL</button>`
+      : '';
 
     const mediaEl = isVid
       ? `<video src="${file.download_url}" muted preload="metadata" loop></video>`
@@ -93,7 +96,7 @@
         <div class="card-filename">${displayName}</div>
         <div class="card-actions">
           <button class="card-btn card-btn-view" data-path="${file.path}" data-sha="${file.sha}" data-url="${file.download_url}" data-type="${isVid ? 'video' : 'image'}">GÖRÜNTÜLE</button>
-          <button class="card-btn card-btn-delete" data-path="${file.path}" data-sha="${file.sha}" data-name="${file.name}">SİL</button>
+          ${deleteButton}
         </div>
       </div>
     `;
@@ -112,7 +115,7 @@
     });
 
     // Delete button
-    card.querySelector('.card-btn-delete').addEventListener('click', async (e) => {
+    card.querySelector('.card-btn-delete')?.addEventListener('click', async (e) => {
       e.stopPropagation();
       await handleDelete(file.path, file.sha, file.name, card);
     });
@@ -124,6 +127,7 @@
    * Handle delete with confirmation
    */
   async function handleDelete(path, sha, name, cardEl) {
+    if (!window.LegionAuth?.isAdmin()) return;
     if (!confirm(`"${decodeFilename(name)}" silinsin mi? Bu işlem geri alınamaz.`)) return;
 
     cardEl.style.opacity = '0.4';

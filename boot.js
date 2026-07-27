@@ -106,9 +106,14 @@
     });
   }
 
-  // Run on DOM ready
-  document.addEventListener('DOMContentLoaded', () => {
+  let started = false;
+  function startOnce() {
+    if (started) return;
+    started = true;
     runBoot();
-  });
+  }
+
+  // Authentication is completed before the boot sequence is allowed to run.
+  document.addEventListener('legion:authenticated', startOnce);
 
 })();

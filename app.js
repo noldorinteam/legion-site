@@ -5,6 +5,26 @@
 
 (function() {
 
+  function playUiSound(kind = 'move') {
+    try {
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      const context = new AudioContext();
+      const oscillator = context.createOscillator();
+      const gain = context.createGain();
+      const frequencies = { move: [110, 220], open: [165, 330], close: [240, 90] };
+      const notes = frequencies[kind] || frequencies.move;
+      oscillator.type = 'square';
+      oscillator.frequency.setValueAtTime(notes[0], context.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(notes[1], context.currentTime + .11);
+      gain.gain.setValueAtTime(.025, context.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, context.currentTime + .13);
+      oscillator.connect(gain).connect(context.destination);
+      oscillator.start();
+      oscillator.stop(context.currentTime + .13);
+      oscillator.onended = () => context.close();
+    } catch (_) {}
+  }
+
   // ─── GLITCH TRANSITION ───────────────────────────
   const BINARY_STRINGS = [
     '01011001 01101111 01110101 00100000',
@@ -16,6 +36,7 @@
   ];
 
   function showGlitch(targetSection, labelText) {
+    playUiSound('open');
     const overlay = document.getElementById('glitch-overlay');
     const binary  = document.getElementById('glitch-binary');
     const label   = document.getElementById('glitch-label');
@@ -41,6 +62,7 @@
 
     // Onclick
     label.onclick = () => {
+      playUiSound('close');
       overlay.classList.add('hidden');
       label.style.opacity = '0';
       label.style.pointerEvents = 'none';
@@ -68,7 +90,8 @@
         database: 'VERİTABANI',
         gallery:  'GALERİ',
         upload:   'YÜKLE',
-        about:    'HAKKINDA'
+        about:    'HAKKINDA',
+        admin:    'YÖNETİM'
       };
       showGlitch(sectionId, labelMap[sectionId] || sectionId.toUpperCase());
       return;
