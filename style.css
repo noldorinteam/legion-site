@@ -1530,6 +1530,11 @@ html:not([data-role="admin"]) #section-admin { display:none !important; }
 }
 #intro-cinematic.hidden { display:none; }
 #intro-cinematic.intro-exit { opacity:0; filter:blur(12px); pointer-events:none; }
+#intro-cinematic.background-mode { z-index:0; pointer-events:none; background:#010403; }
+#intro-cinematic.background-mode .intro-hud,
+#intro-cinematic.background-mode .intro-progress,
+#intro-cinematic.background-mode .intro-shade { display:none; }
+#intro-cinematic.background-mode #intro-video { opacity:.42; filter:saturate(.72) contrast(1.08); }
 #intro-video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; background:#000; }
 .intro-shade { position:absolute; inset:0; pointer-events:none; background:
   linear-gradient(180deg,rgba(0,0,0,.52),transparent 22%,transparent 72%,rgba(0,0,0,.76)),
@@ -1538,8 +1543,15 @@ html:not([data-role="admin"]) #section-admin { display:none !important; }
 .intro-live { display:inline-block; width:7px; height:7px; margin-right:9px; border-radius:50%; background:#00ff7e; box-shadow:0 0 12px #00ff7e; animation:intro-pulse 1.3s infinite; }
 .intro-progress { position:absolute; left:34px; right:34px; bottom:27px; height:2px; overflow:hidden; background:rgba(255,255,255,.16); }
 #intro-progress-fill { display:block; width:0; height:100%; background:#00ff7e; box-shadow:0 0 10px #00ff7e; transition:width .12s linear; }
-#intro-skip { position:absolute; right:34px; bottom:45px; padding:10px 0; border:0; color:#9db1a6; background:transparent; font:11px 'Share Tech Mono',monospace; letter-spacing:2px; cursor:pointer; }
-#intro-skip:hover { color:#00ff7e; }
+#main-site { z-index:1; background:transparent; }
+#main-site::before { display:none; }
+.global-logout {
+  flex-shrink:0; padding:8px 11px; border:1px solid rgba(255,76,91,.28); border-radius:7px;
+  color:#b9848a; background:rgba(35,3,8,.25); font:10px 'Share Tech Mono',monospace;
+  letter-spacing:1px; cursor:pointer; transition:.22s;
+}
+.global-logout:hover { color:#fff; border-color:#ff4c5b; background:rgba(255,76,91,.13); box-shadow:0 0 18px rgba(255,76,91,.12); }
+.global-logout span { color:#ff4c5b; }
 
 #navbar {
   margin:14px 18px 0; width:calc(100% - 36px); border:1px solid rgba(0,255,126,.19);
@@ -1564,5 +1576,5 @@ html:not([data-role="admin"]) #section-admin { display:none !important; }
   .hero-container { padding:25px; border-radius:15px; }
   .intro-hud { padding:18px; }
   .intro-progress { left:18px; right:18px; bottom:18px; }
-  #intro-skip { right:18px; bottom:34px; }
+  .global-logout { padding:7px 8px; font-size:9px; }
 }
