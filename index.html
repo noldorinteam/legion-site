@@ -187,7 +187,7 @@
         <li><a href="#" class="nav-link"         data-section="database" id="nav-database">VERİTABANI</a></li>
         <li><a href="#" class="nav-link"         data-section="reports"  id="nav-reports">RAPORLAR</a></li>
         <li><a href="#" class="nav-link"         data-section="gallery"  id="nav-gallery">GALERİ</a></li>
-        <li><a href="#" class="nav-link"         data-section="upload"   id="nav-upload">YÜKLE</a></li>
+        <li><a href="#" class="nav-link"         data-section="upload"   id="nav-upload">GALERİYE YÜKLE</a></li>
         <li><a href="#" class="nav-link"         data-section="about"    id="nav-about">HAKKINDA</a></li>
       </ul>
       <div class="nav-status">
@@ -362,10 +362,14 @@
     <!-- ═══════ SECTION: UPLOAD ═══════ -->
     <section id="section-upload" class="section hidden">
       <div class="section-header">
-        <h2 class="section-title"><span class="title-prefix">//</span> DOSYA YÜKLE</h2>
-        <p class="section-desc">GitHub deposuna otomatik gönderim</p>
+        <h2 class="section-title"><span class="title-prefix">//</span> GALERİYE MEDYA YÜKLE</h2>
+        <p class="section-desc">Yalnızca galeri arşivine fotoğraf veya video ekler.</p>
       </div>
       <div class="upload-panel">
+        <label class="media-title-field" for="media-title">
+          <span>GALERİ BAŞLIĞI</span>
+          <input id="media-title" type="text" maxlength="80" placeholder="Fotoğraf veya video başlığı" autocomplete="off">
+        </label>
         <div class="upload-zone" id="upload-zone">
           <div class="upload-icon">⬆</div>
           <p class="upload-main-text">DOSYAYI SÜRÜKLE &amp; BIRAK</p>

@@ -84,17 +84,7 @@
   let currentSection = 'home';
 
   function navigateTo(sectionId, withGlitch) {
-    if (withGlitch) {
-      const labelMap = {
-        home:     'ANA SAYFA',
-        database: 'VERİTABANI',
-        reports:   'RAPORLAR',
-        gallery:  'GALERİ',
-        upload:   'YÜKLE',
-        about:    'HAKKINDA',
-        admin:    'YÖNETİM'
-      };
-      showGlitch(sectionId, labelMap[sectionId] || sectionId.toUpperCase());
+    if (window.LegionAuth?.role() === 'visitor' && !['home', 'gallery', 'about'].includes(sectionId)) {
       return;
     }
 
@@ -228,6 +218,7 @@
     const btnText   = document.getElementById('upload-btn-text');
     const spinner   = document.getElementById('upload-spinner');
     const statusEl  = document.getElementById('upload-status');
+    const titleInput = document.getElementById('media-title');
 
     if (!zone) return;
 
@@ -274,12 +265,20 @@
       zone.style.display = '';
       preview.style.display = 'none';
       input.value = '';
+      titleInput.value = '';
       statusEl.className = 'upload-status hidden';
       clearUploadLog();
     });
 
     doBtn.addEventListener('click', async () => {
       if (filesToUpload.length === 0) return;
+      const mediaTitle = titleInput.value.trim();
+      if (!mediaTitle) {
+        titleInput.focus();
+        statusEl.className = 'upload-status error';
+        statusEl.textContent = 'Galeri başlığı yazmalısın.';
+        return;
+      }
       btnText.textContent = 'GÖNDERİLİYOR...';
       spinner.classList.remove('hidden');
       doBtn.disabled = true;
@@ -291,9 +290,10 @@
 
       let successCount = 0, errorCount = 0;
 
-      for (const file of filesToUpload) {
+      for (const [index, file] of filesToUpload.entries()) {
         try {
-          const result = await GithubAPI.uploadFile(file, logUploadLine);
+          const titledName = filesToUpload.length > 1 ? `${mediaTitle}-${index + 1}` : mediaTitle;
+          const result = await GithubAPI.uploadFile(file, logUploadLine, titledName);
           Gallery.addMedia({
             name: result.name,
             path: result.path,
@@ -397,12 +397,12 @@
     });
 
     // Home animations
-    runTyped();
-    runBinaryBar();
+    document.getElementById('typed-subtitle').textContent = 'FiveM’de sistemi kontrol ediyoruz.';
+    document.getElementById('binary-bar').textContent = '01001100 01000101 01000111 01001001 01001111 01001110';
+    document.getElementById('stat-members').textContent = '13';
+    document.getElementById('stat-ops').textContent = '47';
+    document.getElementById('stat-targets').textContent = '89';
     runTerminal();
-    animateCounter('stat-members', 13, 1500);
-    animateCounter('stat-ops', 47, 2000);
-    animateCounter('stat-targets', 89, 2500);
 
     // Upload
     initUpload();

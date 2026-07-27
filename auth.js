@@ -119,7 +119,7 @@
   function restoreSession() {
     try {
       const session = JSON.parse(sessionStorage.getItem(SESSION_KEY));
-      if (session && session.expiresAt > Date.now() && ['admin', 'member'].includes(session.role)) {
+      if (session && session.expiresAt > Date.now() && ['admin', 'member', 'visitor'].includes(session.role)) {
         currentRole = session.role;
         return true;
       }
@@ -165,6 +165,7 @@
               autocomplete="current-password" spellcheck="false" autofocus />
           </div>
           <button type="submit" id="access-submit">OTURUMU BAŞLAT <b>↗</b></button>
+          <button type="button" id="visitor-submit">ZİYARETÇİ OLARAK GİR <b>→</b></button>
           <div id="access-error" aria-live="polite"></div>
           <div class="access-meta"><span>● AES-256 CHANNEL</span><span>SESSION / 08H</span></div>
         </form>
@@ -241,6 +242,11 @@
     document.documentElement.dataset.role = currentRole || 'guest';
     document.getElementById('admin-nav-item')?.classList.toggle('hidden', !isAdmin());
     document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin()));
+    const visitor = currentRole === 'visitor';
+    ['database', 'reports', 'upload'].forEach(section => {
+      document.getElementById(`nav-${section}`)?.closest('li')?.classList.toggle('hidden', visitor);
+    });
+    document.getElementById('enter-db-btn')?.classList.toggle('hidden', visitor);
     window.dispatchEvent(new CustomEvent('legion:rolechange', { detail: { role: currentRole } }));
   }
 
@@ -293,7 +299,7 @@
     const overlay = document.getElementById('site-video-background');
     const video = document.getElementById('site-background-video');
     overlay.classList.remove('hidden');
-    video.src = 'music/LEGION_90s_WEB_LITE.mp4';
+    video.src = 'music/LEGION_90s_WEB_ULTRA.mp4';
     video.muted = true;
     video.volume = 0;
     video.loop = true;
@@ -316,6 +322,7 @@
   }
 
   function bind() {
+    document.getElementById('visitor-submit')?.addEventListener('click', () => unlock('visitor'));
     document.getElementById('access-form').addEventListener('submit', async event => {
       event.preventDefault();
       const input = document.getElementById('access-password');

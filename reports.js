@@ -49,12 +49,23 @@
     return Array.isArray(parsed) ? parsed : [];
   }
 
-  async function pushReports(nextReports, message) {
+  async function pushReports(nextReports, message, options = {}) {
+    const { retry = true, removedId = null } = options;
     const body = { message, content: encode(nextReports), branch: config().branch };
     if (fileSha) body.sha = fileSha;
     const response = await fetch(apiUrl(REPORTS_FILE), {
       method: 'PUT', headers: headers(true), body: JSON.stringify(body)
     });
+    if (response.status === 409 && retry) {
+      const latest = await fetchReports();
+      const merged = removedId
+        ? latest.filter(report => report.id !== removedId)
+        : [...nextReports, ...latest].filter((report, index, list) =>
+            list.findIndex(item => item.id === report.id) === index
+          );
+      reports = merged;
+      return pushReports(merged, message, { retry: false, removedId });
+    }
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.message || `Rapor kaydedilemedi (${response.status})`);
@@ -129,7 +140,7 @@
     reports = reports.filter(item => item.id !== id);
     render();
     try {
-      await pushReports(reports, `[LEGION] Rapor silindi: ${report.title}`);
+      await pushReports(reports, `[LEGION] Rapor silindi: ${report.title}`, { removedId: id });
     } catch (error) {
       reports = previous;
       render();
@@ -166,7 +177,10 @@
         title, author, incident, photoUrl,
         createdAt: new Date().toLocaleString('tr-TR')
       };
-      reports.unshift(report);
+      const latest = await fetchReports();
+      reports = [report, ...latest].filter((item, index, list) =>
+        list.findIndex(candidate => candidate.id === item.id) === index
+      );
       await pushReports(reports, `[LEGION] Yeni rapor: ${title}`);
       event.target.reset();
       document.getElementById('report-photo-name').textContent = 'Dosya seçilmedi · JPG, PNG, WEBP, GIF — en fazla 8 MB';
