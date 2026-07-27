@@ -92,6 +92,7 @@
   }
 
   async function uploadPhoto(file) {
+    file = await window.ImageUtils.optimize(file, { maxDimension: 1600, quality: 0.8 });
     const cfg = window.LEGION_CONFIG;
     const timestamp = Date.now();
     const ext = file.name.split('.').pop();
