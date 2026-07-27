@@ -152,7 +152,6 @@
         <video id="site-background-video" playsinline muted loop preload="metadata"></video>
         <div class="video-background-shade"></div>
       </div>
-      <audio id="voice-track" src="music/jeXfXt5eaCyPmIG6oKRfNA.mp3" loop preload="auto"></audio>
       <div id="access-gate" role="dialog" aria-modal="true" aria-labelledby="access-title">
         <div class="access-noise"></div>
         <form id="access-form" class="access-card" autocomplete="off">
@@ -283,14 +282,9 @@
 
   function startSiteAudio() {
     const backgroundMusic = document.getElementById('bg-music');
-    const voiceTrack = document.getElementById('voice-track');
     if (backgroundMusic) {
-      backgroundMusic.volume = .06;
+      backgroundMusic.volume = .35;
       backgroundMusic.play().catch(() => {});
-    }
-    if (voiceTrack) {
-      voiceTrack.volume = .42;
-      voiceTrack.play().catch(() => {});
     }
   }
 
@@ -310,15 +304,12 @@
     document.addEventListener('visibilitychange', () => {
       const video = document.getElementById('site-background-video');
       const music = document.getElementById('bg-music');
-      const voiceTrack = document.getElementById('voice-track');
       if (document.hidden) {
         video?.pause();
         music?.pause();
-        voiceTrack?.pause();
       } else if (currentRole) {
         video?.play().catch(() => {});
         music?.play().catch(() => {});
-        voiceTrack?.play().catch(() => {});
       }
     });
   }

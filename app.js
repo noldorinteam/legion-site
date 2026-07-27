@@ -338,21 +338,18 @@
   function initMusic() {
     const btn   = document.getElementById('music-toggle');
     const audio = document.getElementById('bg-music');
-    const voiceTrack = document.getElementById('voice-track');
     const icon  = document.getElementById('music-icon');
     if (!btn || !audio) return;
 
-    let playing = !audio.paused || (voiceTrack && !voiceTrack.paused);
+    let playing = !audio.paused;
     btn.addEventListener('click', () => {
       if (playing) {
         audio.pause();
-        voiceTrack?.pause();
         icon.textContent = '♪';
         btn.style.borderColor = 'var(--border)';
         playing = false;
       } else {
         audio.play().catch(() => {});
-        voiceTrack?.play().catch(() => {});
         icon.textContent = '■';
         btn.style.borderColor = 'var(--green)';
         playing = true;
