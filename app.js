@@ -338,21 +338,18 @@
   function initMusic() {
     const btn   = document.getElementById('music-toggle');
     const audio = document.getElementById('bg-music');
-    const loginAudio = document.getElementById('login-music');
     const icon  = document.getElementById('music-icon');
     if (!btn || !audio) return;
 
-    let playing = !audio.paused || (loginAudio && !loginAudio.paused);
+    let playing = !audio.paused;
     btn.addEventListener('click', () => {
       if (playing) {
         audio.pause();
-        loginAudio?.pause();
         icon.textContent = '♪';
         btn.style.borderColor = 'var(--border)';
         playing = false;
       } else {
         audio.play().catch(() => {});
-        loginAudio?.play().catch(() => {});
         icon.textContent = '■';
         btn.style.borderColor = 'var(--green)';
         playing = true;
