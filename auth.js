@@ -243,7 +243,7 @@
     document.getElementById('admin-nav-item')?.classList.toggle('hidden', !isAdmin());
     document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !isAdmin()));
     const visitor = currentRole === 'visitor';
-    ['database', 'reports', 'upload'].forEach(section => {
+    ['database', 'reports', 'chains', 'upload'].forEach(section => {
       document.getElementById(`nav-${section}`)?.closest('li')?.classList.toggle('hidden', visitor);
     });
     document.getElementById('enter-db-btn')?.classList.toggle('hidden', visitor);
