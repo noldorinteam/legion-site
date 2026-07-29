@@ -260,6 +260,41 @@
     });
   }
 
+  function initClipboardUploads() {
+    document.addEventListener('paste', (event) => {
+      const imageFiles = [...(event.clipboardData?.items || [])]
+        .filter(item => item.kind === 'file' && item.type.startsWith('image/'))
+        .map(item => item.getAsFile())
+        .filter(Boolean)
+        .map((file, index) => {
+          const extension = (file.type.split('/')[1] || 'png').replace('jpeg', 'jpg');
+          return new File([file], `ekran-goruntusu-${Date.now()}-${index + 1}.${extension}`, {
+            type: file.type,
+            lastModified: Date.now()
+          });
+        });
+      if (!imageFiles.length) return;
+
+      let target = null;
+      const dbModal = document.getElementById('db-modal');
+      const reportPanel = document.getElementById('report-form-panel');
+      if (dbModal && !dbModal.classList.contains('hidden')) {
+        target = document.getElementById('field-photo');
+      } else if (currentSection === 'reports' && reportPanel && !reportPanel.classList.contains('hidden')) {
+        target = document.getElementById('report-photo');
+      } else if (currentSection === 'upload') {
+        target = document.getElementById('file-input');
+      }
+      if (!target) return;
+
+      const transfer = new DataTransfer();
+      imageFiles.slice(0, target.multiple ? imageFiles.length : 1).forEach(file => transfer.items.add(file));
+      target.files = transfer.files;
+      target.dispatchEvent(new Event('change', { bubbles: true }));
+      event.preventDefault();
+    });
+  }
+
   function logUploadLine(msg, type) {
     const log = document.getElementById('upload-log');
     if (!log) return;
@@ -285,14 +320,21 @@
     const icon  = document.getElementById('music-icon');
     if (!btn || !audio) return;
 
+    const preferenceKey = 'legion:music-enabled';
     let playing = !audio.paused;
+    if (localStorage.getItem(preferenceKey) === 'false') {
+      audio.pause();
+      playing = false;
+    }
     btn.addEventListener('click', () => {
       if (playing) {
+        localStorage.setItem(preferenceKey, 'false');
         audio.pause();
         icon.textContent = '♪';
         btn.style.borderColor = 'var(--border)';
         playing = false;
       } else {
+        localStorage.setItem(preferenceKey, 'true');
         audio.play().catch(() => {});
         icon.textContent = '■';
         btn.style.borderColor = 'var(--green)';
@@ -344,6 +386,7 @@
 
     // Upload
     initUpload();
+    initClipboardUploads();
 
     // Music
     initMusic();

@@ -20,7 +20,7 @@
     function draw() {
       ctx.fillStyle = 'rgba(0,0,0,0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#00ff41';
+      ctx.fillStyle = '#ff2a2a';
       ctx.font = fontSize + 'px "Share Tech Mono", monospace';
       for (let i = 0; i < drops.length; i++) {
         const char = chars[Math.floor(Math.random() * chars.length)];
@@ -46,9 +46,9 @@
     const drops = Array(cols).fill(0).map(() => Math.random() * -100);
 
     function draw() {
-      ctx.fillStyle = 'rgba(2,10,4,0.05)';
+      ctx.fillStyle = 'rgba(11,2,2,0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#00c832';
+      ctx.fillStyle = '#d91515';
       ctx.font = fontSize + 'px "Share Tech Mono", monospace';
       for (let i = 0; i < drops.length; i++) {
         const char = chars[Math.floor(Math.random() * chars.length)];

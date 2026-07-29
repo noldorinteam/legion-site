@@ -133,7 +133,7 @@
             <div id="photo-preview-wrap">
               <div class="photo-placeholder" id="photo-placeholder">
                 <span class="photo-icon">⬡</span>
-                <span>FOTOĞRAF SEÇ</span>
+                <span>FOTOĞRAF SEÇ VEYA CTRL+V</span>
                 <span class="photo-sub">PNG, JPG, WEBP — maks 10MB</span>
               </div>
               <img id="photo-preview" src="" alt="" style="display:none;"/>
@@ -196,8 +196,8 @@
       </div>
     </nav>
 
-    <audio id="bg-music" loop>
-      <source src="music/background.mp3?v=20260727-2" type="audio/mpeg"/>
+    <audio id="bg-music" loop preload="none">
+      <source src="music/background.mp3?v=20260729-1" type="audio/mpeg"/>
     </audio>
     <button id="music-toggle" title="Müziği aç/kapat">
       <span id="music-icon">♪</span>
@@ -340,7 +340,7 @@
             <label class="report-photo-field">
               <span>FOTOĞRAF <small>(İSTEĞE BAĞLI)</small></span>
               <input id="report-photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
-              <div id="report-photo-name">Dosya seçilmedi · JPG, PNG, WEBP, GIF — en fazla 8 MB</div>
+              <div id="report-photo-name">Dosya seçilmedi · JPG, PNG, WEBP, GIF — en fazla 8 MB · Ctrl+V ile yapıştırabilirsiniz</div>
             </label>
             <div class="report-form-actions">
               <button id="cancel-report-btn" type="button" class="action-btn danger">İPTAL</button>
@@ -373,7 +373,7 @@
         <div class="upload-zone" id="upload-zone">
           <div class="upload-icon">⬆</div>
           <p class="upload-main-text">DOSYAYI SÜRÜKLE &amp; BIRAK</p>
-          <p class="upload-sub-text">veya tıkla — PNG, JPG, GIF, MP4, WEBM</p>
+          <p class="upload-sub-text">veya tıkla / ekran görüntüsünü Ctrl+V ile yapıştır — PNG, JPG, GIF, MP4, WEBM</p>
           <input type="file" id="file-input" accept="image/*,video/*" multiple hidden/>
         </div>
         <div class="upload-preview-container" id="upload-preview-container" style="display:none;">
