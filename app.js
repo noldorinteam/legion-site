@@ -43,6 +43,7 @@
     if (sectionId === 'gallery')  Gallery.loadGallery();
     if (sectionId === 'database') Database.loadDatabase();
     if (sectionId === 'reports')  Reports.load();
+    if (sectionId === 'chains')   IncidentChains.load();
   }
 
   // Expose for other modules

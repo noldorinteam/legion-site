@@ -186,6 +186,7 @@
         <li><a href="#" class="nav-link active" data-section="home"     id="nav-home">ANA SAYFA</a></li>
         <li><a href="#" class="nav-link"         data-section="database" id="nav-database">VERİTABANI</a></li>
         <li><a href="#" class="nav-link"         data-section="reports"  id="nav-reports">RAPORLAR</a></li>
+        <li><a href="#" class="nav-link"         data-section="chains"   id="nav-chains">OLAY ZİNCİRİ</a></li>
         <li><a href="#" class="nav-link"         data-section="gallery"  id="nav-gallery">GALERİ</a></li>
         <li><a href="#" class="nav-link"         data-section="upload"   id="nav-upload">GALERİYE YÜKLE</a></li>
         <li><a href="#" class="nav-link"         data-section="about"    id="nav-about">HAKKINDA</a></li>
@@ -296,6 +297,65 @@
           </thead>
           <tbody id="db-tbody"></tbody>
         </table>
+      </div>
+    </section>
+
+    <!-- ═══════ SECTION: INCIDENT CHAINS ═══════ -->
+    <section id="section-chains" class="section hidden">
+      <div class="chain-header">
+        <div>
+          <span class="chain-kicker">İLİŞKİ VE OLAY ANALİZİ</span>
+          <h2 class="section-title"><span class="title-prefix">//</span> OLAY ZİNCİRİ</h2>
+          <p class="section-desc">Kişileri, araçları, mekânları, kanıtları ve olayları kutular hâlinde ekleyip birbirine bağlayın.</p>
+        </div>
+        <div class="chain-save-wrap">
+          <span id="chain-save-status" aria-live="polite"></span>
+          <button id="save-chain-btn" class="action-btn primary">ZİNCİRİ KAYDET</button>
+        </div>
+      </div>
+
+      <div class="chain-create-bar">
+        <input id="chain-title-input" maxlength="80" placeholder="Yeni zincirin adı (örn. Liman Operasyonu)">
+        <button id="create-chain-btn" class="add-entry-btn"><span class="add-icon">+</span><span>OLAY ZİNCİRİ OLUŞTUR</span></button>
+      </div>
+
+      <div class="chain-layout">
+        <aside class="chain-sidebar">
+          <div class="chain-sidebar-title">KAYITLI ZİNCİRLER</div>
+          <div id="chain-list" class="chain-list"></div>
+        </aside>
+
+        <div class="chain-workspace">
+          <div id="chain-empty" class="chain-empty">
+            <span>◇</span>
+            <b>BİR OLAY ZİNCİRİ OLUŞTURUN</b>
+            <small>Ardından ayrı kutular ekleyip aralarındaki ilişkileri çizin.</small>
+          </div>
+
+          <div id="chain-editor" class="hidden">
+            <div class="chain-toolbar">
+              <select id="node-type" aria-label="Kutucuk türü">
+                <option value="event">OLAY</option>
+                <option value="person">KİŞİ</option>
+                <option value="vehicle">ARAÇ</option>
+                <option value="location">MEKÂN</option>
+                <option value="evidence">KANIT</option>
+                <option value="group">GRUP</option>
+              </select>
+              <input id="node-title" maxlength="60" placeholder="Kutucuk başlığı">
+              <input id="node-detail" maxlength="160" placeholder="Kısa açıklama">
+              <button id="add-node-btn" class="action-btn primary">KUTU EKLE</button>
+              <button id="connect-node-btn" class="action-btn">BAĞLANTI KUR</button>
+              <button id="clear-node-links-btn" class="action-btn danger">BAĞLANTILARI SİL</button>
+              <button id="delete-chain-btn" class="action-btn danger">ZİNCİRİ SİL</button>
+            </div>
+            <div id="connect-help" class="connect-help">Bağlantı kurmak için önce birinci, sonra ikinci kutuya tıklayın.</div>
+            <div id="chain-board" class="chain-board">
+              <svg id="chain-lines" class="chain-lines" aria-hidden="true"></svg>
+              <div id="chain-nodes" class="chain-nodes"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -461,6 +521,7 @@
   <script src="github.js"></script>
   <script src="database.js"></script>
   <script src="reports.js"></script>
+  <script src="chains.js"></script>
   <script src="gallery.js"></script>
   <script src="app.js"></script>
 </body>
