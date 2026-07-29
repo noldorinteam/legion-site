@@ -94,6 +94,7 @@
   function tryPlayMusic() {
     const audio = document.getElementById('bg-music');
     if (!audio) return;
+    if (localStorage.getItem('legion:music-enabled') === 'false') return;
     audio.volume = 0.38;
     audio.play().catch(() => {
       // Autoplay blocked — wait for first user interaction

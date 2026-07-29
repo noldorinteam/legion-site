@@ -284,13 +284,19 @@
     gate.classList.add('access-granted');
     setTimeout(() => gate.remove(), 650);
     startSiteAudio();
-    startBackgroundVideo();
+    // Let the access transition finish before decoding the background video.
+    const startVideo = () => startBackgroundVideo();
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(startVideo, { timeout: 1200 });
+    } else {
+      setTimeout(startVideo, 700);
+    }
     document.dispatchEvent(new CustomEvent('legion:authenticated'));
   }
 
   function startSiteAudio() {
     const backgroundMusic = document.getElementById('bg-music');
-    if (backgroundMusic) {
+    if (backgroundMusic && localStorage.getItem('legion:music-enabled') !== 'false') {
       backgroundMusic.volume = .38;
       backgroundMusic.play().catch(() => {});
     }
@@ -317,7 +323,9 @@
         music?.pause();
       } else if (currentRole) {
         if (document.documentElement.dataset.section === 'home') video?.play().catch(() => {});
-        music?.play().catch(() => {});
+        if (localStorage.getItem('legion:music-enabled') !== 'false') {
+          music?.play().catch(() => {});
+        }
       }
     });
   }
